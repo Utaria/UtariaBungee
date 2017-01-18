@@ -24,7 +24,7 @@ public class PMManager {
 		// On envoie le message aux joueurs en mode SPY
 		for (ProxiedPlayer player : this.playersSpying)
 			if (player.isConnected() && player != sender && player != receiver)
-				player.sendMessage(text);
+				player.sendMessage(new TextComponent("§b* " + text.getText()));
 
 		// On affiche le message dans la console pour avoir un retour sur les messages privés
 		BungeeCord.getInstance().getConsole().sendMessage(new TextComponent("[PM] " + sender.getName() + " > " + receiver.getName() + " : " + message));
