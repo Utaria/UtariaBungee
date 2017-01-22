@@ -492,9 +492,8 @@ public class Database {
 			source.setUsername(Database.user);
 			source.setPassword(Database.pass);
 
-			source.setInitialSize(2);
-			source.setMaxOpenPreparedStatements(5);
-			source.setMaxTotal(10);
+			source.setTestOnBorrow(false);
+			source.setTestWhileIdle(true);
 
 			source.setValidationQuery("SELECT COUNT(*) FROM servers");
 		} catch(Exception e) {

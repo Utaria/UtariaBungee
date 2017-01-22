@@ -23,7 +23,8 @@ public class AutoMessageTask implements Runnable {
 			"§eDes §ebugs, §eou §esimplement §edes §eavis §e? §ePostez-les §esur §enotre §esite §edédié §a§lfeedback.utaria.fr§7.",
 			// "§eVous pouvez postuler à cette adresse pour rejoindre §enotre §estaff §e: §6recrutement@utaria.fr§e.",
 			"§eLe serveur est en version §b§lALPHA§e : §edes §ebugs §epeuvent §eapparaitre, §emerci §ed'être §atolérant§e.",
-			"§eNotre infrastructure est fragilisée. §eNous §etravaillons §epour §ela §erétablir §eau §eplus §evite. §eDésolé §epour §ela §egène."
+			"§eL'économie a évolué, vous §eavez §cperdu §cla §cmoitié §cde §cvotre §cargent... §eMais §eles §evillageois §evous §eattendent §epour §eéchanger §eavec §evous §e!",
+			"§eEnvie §ede §ePVP §e? §eTestez §ele §enouveau §emini-jeu §61vs1 §edisponible §eau §evillage §e"
 		);
 		this.current = -1;
 
