@@ -28,13 +28,14 @@ public class PlayerJoinListener implements Listener{
 		final String playername = e.getConnection().getName();
 		final String ip = e.getConnection().getAddress().getAddress().getHostAddress();
 
+
 		/*      Protections Anti-bot      */
 		if (UtariaBungee.getAntiBotManager().ipIsBot(ip)) {
 			BungeeCord.getInstance().getConsole().sendMessage(new TextComponent("L'IP " + ip + " semble etre un bot et a ete rejetee."));
 
 			e.setCancelled(true);
-			e.setCancelReason("BOT");
-			e.getConnection().disconnect(new TextComponent("BOT"));
+			e.setCancelReason("Votre IP semble être non sécurisée, déconnexion.");
+			e.getConnection().disconnect(new TextComponent("§cVotre IP semble être non sécurisée, déconnexion."));
 			return;
 		}
 
@@ -118,14 +119,15 @@ public class PlayerJoinListener implements Listener{
 
 		// Détection d'un bot (première couche)
 		String ip = Utils.getPlayerIP(pp);
+
 		if (UtariaBungee.getAntiBotManager().ipIsBot(ip)) {
 			BungeeCord.getInstance().getConsole().sendMessage(new TextComponent("L'IP " + ip + " semble être un bot et a été rejetée."));
 
-			pp.disconnect(new TextComponent("BOT"));
+			pp.disconnect(new TextComponent("§cVotre IP semble être non sécurisée, déconnexion."));
 			return;
 		}
 		// Deuxième couche de la protection
-		if (!UtariaBungee.getAntiBotManager().passSecondProtection()) {
+		if (!UtariaBungee.getAntiBotManager().passSecondProtection(e.getPlayer().getPendingConnection().isOnlineMode())) {
 			pp.disconnect(new TextComponent("§cTrop de connexions, veuillez réessayer dans 10 secondes."));
 			return;
 		}

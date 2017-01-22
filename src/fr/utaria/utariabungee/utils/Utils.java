@@ -6,10 +6,12 @@ import fr.utaria.utariabungee.database.DatabaseSet;
 import net.md_5.bungee.BungeeCord;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
+import net.md_5.bungee.conf.Configuration;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.lang.reflect.Field;
 import java.net.*;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
@@ -69,6 +71,18 @@ public class Utils {
     public static void    kickAllPlayers(String reason) {
         for(ProxiedPlayer player : BungeeCord.getInstance().getPlayers())
             player.disconnect(new TextComponent(reason));
+    }
+    public static void    setProxyOnlineMode(boolean onlineMode) {
+        try {
+            Configuration localConfiguration = BungeeCord.getInstance().config;
+            Field localField;
+
+            localField = localConfiguration.getClass().getDeclaredField("onlineMode");
+            localField.setAccessible(true);
+            localField.set(localConfiguration, onlineMode);
+        } catch (Exception localException) {
+            UtariaBungee.getInstance().getLogger().warning("[UtariaBungee] Erreur interne lors du changement du mode \"online\" en : " + onlineMode + ".");
+        }
     }
     public static String  getPlayerIP(ProxiedPlayer player) {
         return player.getAddress().getAddress().getHostAddress();
