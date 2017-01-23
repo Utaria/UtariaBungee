@@ -117,6 +117,7 @@ public class AutoRestartManager {
 
 
         // 5) On redémarre le serveur central
+		BungeeCord.getInstance().stop("Redémarrage automatique");
 
         // TODO A faire avec un fichier stop.sh et start.sh
         // TODO Les deux fichiers seront appelés par un fichier externe restartbungee.sh par exemple.

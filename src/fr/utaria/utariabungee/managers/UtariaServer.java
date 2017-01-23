@@ -62,9 +62,13 @@ public class UtariaServer {
 		this._default = b;
 	}
 
-
 	public ServerInfo getServerInfo() {
 		return this._info;
+	}
+
+
+	public boolean restart() {
+		return false;
 	}
 
 

@@ -2,8 +2,10 @@ package fr.utaria.utariabungee.socket;
 
 import java.io.IOException;
 import java.net.ServerSocket;
+import java.util.logging.Level;
 
 import fr.utaria.utariabungee.Config;
+import fr.utaria.utariabungee.UtariaBungee;
 
 public class SocketServer {
 
@@ -19,19 +21,20 @@ public class SocketServer {
 	public ServerSocket getServerInstance(){
 		return this.server;
 	}
-	
-	private void start(){
+
+
+	private void start() {
 		try{
 			this.server = new ServerSocket(this.port);
 		} catch(Exception e){
 			// e.printStackTrace();
-			System.out.println("[UtariaBungee] Server start with an error : " + e.getMessage());
+			UtariaBungee.getInstance().getLogger().log(Level.SEVERE, "Server start with an error : " + e.getMessage());
 		}
 		
 		this.serverThread = new Thread(new SocketThread(this));
 		this.serverThread.start();
 	}
-	public  void stop(){
+	public  void stop() {
 		if(this.server == null) return ;
 		
 		if(serverThread != null){

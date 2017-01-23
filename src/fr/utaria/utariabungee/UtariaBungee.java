@@ -42,7 +42,7 @@ public class UtariaBungee extends Plugin{
 
 
 
-	public void onEnable(){
+	public void onEnable() {
 		instance = this;
 
 
@@ -103,7 +103,7 @@ public class UtariaBungee extends Plugin{
 		pm.registerListener(this, new TabCompletionListener());
 	}
 
-	public void onDisable(){
+	public void onDisable() {
 		// Close socket server
 		if(this.socketServer != null){
 			this.socketServer.stop();
