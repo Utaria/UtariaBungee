@@ -19,36 +19,39 @@ public class UptimeCommand extends Command {
 
     @Override
     public void execute(CommandSender sender, String[] args) {
-        if( !(sender instanceof ProxiedPlayer) ) return;
-        ProxiedPlayer pp = (ProxiedPlayer) sender;
 
-        if(PlayerInfo.get(pp).getRankLevel() < 40){
-            BungeeMessages.cannotUseCommand(pp);
-            return;
+        if(sender instanceof ProxiedPlayer){
+            ProxiedPlayer pp = (ProxiedPlayer) sender;
+            if(PlayerInfo.get(pp).getRankLevel() < 40){
+                BungeeMessages.cannotUseCommand(sender);
+                return;
+            }
         }
 
         int startTime   = UtariaBungee.getAutoRestartManager().getSecondsBetweenStart();
         int restartTime = UtariaBungee.getAutoRestartManager().getRestartHour();
         int upTime      = UtariaBungee.getAutoRestartManager().getUpTime() / 1000;
 
-        PlayerUtils.sendHorizontalLineWithText(pp, "§eDurée de fontionnement", ChatColor.GREEN);
+        if (sender instanceof ProxiedPlayer) PlayerUtils.sendHorizontalLineWithText((ProxiedPlayer) sender, "§eDurée de fontionnement", ChatColor.GREEN);
+        else                                 sender.sendMessage(new TextComponent(ChatColor.GREEN + " ---- Durée de fonctionnement --- "));
 
-        pp.sendMessage(" ");
-        pp.sendMessage(new TextComponent("  §7 Durée de fonctionnement : §b" + TimeParser.secToHumanReadableString(startTime) ));
-        pp.sendMessage(new TextComponent(""));
+        sender.sendMessage(" ");
+        sender.sendMessage(new TextComponent("  §7 Durée de fonctionnement : §b" + TimeParser.secToHumanReadableString(startTime) ));
+        sender.sendMessage(new TextComponent(""));
 
         if( !UtariaBungee.getAutoRestartManager().isDisabled() ) {
-            pp.sendMessage(new TextComponent("  §7 Prochain redémarrage à : §6" + TimeParser.secToHumanReadableString(restartTime)));
-            pp.sendMessage(new TextComponent("  §7 Redémarrage dans       : §e" + TimeParser.secToHumanReadableString(upTime)));
+            sender.sendMessage(new TextComponent("  §7 Prochain redémarrage à : §6" + TimeParser.secToHumanReadableString(restartTime)));
+            sender.sendMessage(new TextComponent("  §7 Redémarrage dans       : §e" + TimeParser.secToHumanReadableString(upTime)));
         } else {
-            pp.sendMessage(new TextComponent("  §7 Redémarrage automatique §cdésactivé§7."));
-            pp.sendMessage(new TextComponent("  §7 Tapez §a§l/report §r§7pour signaler le problème. Merci."));
+            sender.sendMessage(new TextComponent("  §7 Redémarrage automatique §cdésactivé§7."));
+            sender.sendMessage(new TextComponent("  §7 Tapez §a§l/report §r§7pour signaler le problème. Merci."));
         }
-        pp.sendMessage(new TextComponent(""));
-        pp.sendMessage(new TextComponent(""));
-        pp.sendMessage(" ");
+        sender.sendMessage(new TextComponent(""));
+        sender.sendMessage(new TextComponent(""));
+        sender.sendMessage(" ");
 
-        PlayerUtils.sendHorizontalLine(pp, ChatColor.GREEN);
+        if (sender instanceof ProxiedPlayer) PlayerUtils.sendHorizontalLine((ProxiedPlayer) sender, ChatColor.GREEN);
+        else                                 sender.sendMessage(new TextComponent(ChatColor.GREEN + " --------------------------------- "));
 
     }
 

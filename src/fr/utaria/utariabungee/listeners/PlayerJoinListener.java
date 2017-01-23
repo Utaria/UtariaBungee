@@ -28,13 +28,22 @@ public class PlayerJoinListener implements Listener{
 		final String playername = e.getConnection().getName();
 		final String ip = e.getConnection().getAddress().getAddress().getHostAddress();
 
+
 		/*      Protections Anti-bot      */
 		if (UtariaBungee.getAntiBotManager().ipIsBot(ip)) {
 			BungeeCord.getInstance().getConsole().sendMessage(new TextComponent("L'IP " + ip + " semble etre un bot et a ete rejetee."));
 
 			e.setCancelled(true);
-			e.setCancelReason("BOT");
-			e.getConnection().disconnect(new TextComponent("BOT"));
+			e.setCancelReason("Votre IP semble être non sécurisée, déconnexion.");
+			e.getConnection().disconnect(new TextComponent("§cVotre IP semble être non sécurisée, déconnexion."));
+			return;
+		}
+
+		/*      On interdit les joueurs avec un espace dans leur pseudo      */
+		if (playername.contains(" ")) {
+			e.setCancelled(true);
+			e.setCancelReason("Votre pseudo comporte un espace donc vous ne pouvez pas vous connecter.");
+			e.getConnection().disconnect(new TextComponent("§cVotre pseudo comporte un espace donc vous ne pouvez pas vous connecter."));
 			return;
 		}
 
@@ -110,26 +119,27 @@ public class PlayerJoinListener implements Listener{
 
 		// Détection d'un bot (première couche)
 		String ip = Utils.getPlayerIP(pp);
+
 		if (UtariaBungee.getAntiBotManager().ipIsBot(ip)) {
 			BungeeCord.getInstance().getConsole().sendMessage(new TextComponent("L'IP " + ip + " semble être un bot et a été rejetée."));
 
-			pp.disconnect(new TextComponent("BOT"));
+			pp.disconnect(new TextComponent("§cVotre IP semble être non sécurisée, déconnexion."));
 			return;
 		}
 		// Deuxième couche de la protection
-		if (!UtariaBungee.getAntiBotManager().passSecondProtection()) {
+		if (!UtariaBungee.getAntiBotManager().passSecondProtection(e.getPlayer().getPendingConnection().isOnlineMode())) {
 			pp.disconnect(new TextComponent("§cTrop de connexions, veuillez réessayer dans 10 secondes."));
 			return;
 		}
 
 
 		// On met à jour les infos du joueur en base de données
-		BungeeCord.getInstance().getScheduler().runAsync(UtariaBungee.getInstance(), new Runnable() {@Override public void run() {
-			try{
+		BungeeCord.getInstance().getScheduler().runAsync(UtariaBungee.getInstance(), () -> {
+			try {
 				PlayerInfo.get(pp);
 				UtariaBungee.getDatabase().save("players", DatabaseSet.makeFields("last_ip", Utils.getPlayerIP(pp), "last_connection", new Timestamp(new Date().getTime())), DatabaseSet.makeConditions("playername", pp.getName()));
-			}catch(Exception e){}
-		}});
+			} catch(Exception ignored){}
+		});
 
 
         // Si le serveur est complet, on déconnecte le joueur, car il ne peut pas se connecter.
@@ -137,38 +147,6 @@ public class PlayerJoinListener implements Listener{
 			pp.disconnect(new TextComponent("§cServeur complet ! Merci de réessayer plus tard."));
 			return;
         }
-
-
-        // On déplace le joueur sur le serveur de connexion
-		if (!Config.manualServers) {
-
-			final UtariaServer defaultServer = UtariaBungee.getServerManager().getDefaultServer();
-
-			if ( defaultServer != null ) {
-
-				// On regarde si le serveur est bien en ligne
-				BungeeCord.getInstance().getServerInfo(defaultServer.getName()).ping(new Callback<ServerPing>() {
-
-					@Override
-					public void done(ServerPing serverPing, Throwable throwable) {
-						try {
-							serverPing.getVersion();
-
-							pp.connect(defaultServer.getServerInfo());
-							pp.setReconnectServer(defaultServer.getServerInfo());
-						}
-						// Serveur hors-ligne
-						catch (Exception e) {
-							pp.disconnect(new TextComponent("§cLe serveur de connexion semble fermé, veuillez réessayer plus tard."));
-						}
-					}
-
-				});
-
-
-			} else pp.disconnect(new TextComponent("§cConnexion impossible, aucun hub n'est disponible."));
-
-		}
 
 
 		// On défini les titres dans la TABLIST

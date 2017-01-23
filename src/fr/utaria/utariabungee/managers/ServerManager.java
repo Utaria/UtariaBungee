@@ -91,30 +91,27 @@ public class ServerManager {
 
 		this.servers.clear();
 
-		TaskManager.scheduleSyncDelayedTask("reload-servers", new Runnable() {
-			@Override
-			public void run() {
-				Database          db         = UtariaBungee.getDatabase();
+		TaskManager.scheduleSyncDelayedTask("reload-servers", () -> {
+			Database          db         = UtariaBungee.getDatabase();
 
-				List<DatabaseSet> results    = db.find("servers");
-				DatabaseSet       defaultRes = db.findFirst("config", DatabaseSet.makeConditions("key", "default_server"));
+			List<DatabaseSet> results    = db.find("servers");
+			DatabaseSet       defaultRes = db.findFirst("config", DatabaseSet.makeConditions("key", "default_server"));
 
-				for(DatabaseSet result : results) {
-					UtariaServer uServer = new UtariaServer(
-							result.getInteger("id"),
-							result.getString("name"),
-							result.getString("ip"),
-							result.getInteger("port"),
-							result.getInteger("rank_level_needed")
-					);
+			for(DatabaseSet result : results) {
+				UtariaServer uServer = new UtariaServer(
+						result.getInteger("id"),
+						result.getString("name"),
+						result.getString("ip"),
+						result.getInteger("port"),
+						result.getInteger("rank_level_needed")
+				);
 
-					if( defaultRes != null && defaultRes.getString("value").equals(uServer.getName()))
-						uServer.setDefault(true);
+				if( defaultRes != null && defaultRes.getString("value").equals(uServer.getName()))
+					uServer.setDefault(true);
 
-					self.addServer(uServer);
-				}
-
+				self.addServer(uServer);
 			}
+
 		});
 	}
 

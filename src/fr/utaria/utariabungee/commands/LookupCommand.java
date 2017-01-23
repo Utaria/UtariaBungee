@@ -1,22 +1,25 @@
 package fr.utaria.utariabungee.commands;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.regex.Pattern;
-
 import fr.utaria.utariabungee.Config;
 import fr.utaria.utariabungee.UtariaBungee;
 import fr.utaria.utariabungee.database.Database;
 import fr.utaria.utariabungee.database.DatabaseSet;
 import fr.utaria.utariabungee.players.PlayerInfo;
 import fr.utaria.utariabungee.utils.BungeeMessages;
+import fr.utaria.utariabungee.utils.PlayerUtils;
 import fr.utaria.utariabungee.utils.TimeParser;
 import fr.utaria.utariabungee.utils.Utils;
 import net.md_5.bungee.BungeeCord;
+import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
+
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
+import java.util.regex.Pattern;
 
 public class LookupCommand extends Command{
 
@@ -26,7 +29,6 @@ public class LookupCommand extends Command{
 
 	@Override
 	public void execute(final CommandSender sender, final String[] args) {
-		
 		if(sender instanceof ProxiedPlayer){
 			ProxiedPlayer pp = (ProxiedPlayer) sender;
 			if( PlayerInfo.get(pp).getRankLevel() < Config.moderationMinLevel ){
@@ -40,130 +42,142 @@ public class LookupCommand extends Command{
 			return;
 		}
 		
-		Pattern patternIP = Pattern.compile("^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?).(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?).(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?).(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$");
-		final boolean isIP   = patternIP.matcher(args[0]).find();
+		      Pattern patternIP = Pattern.compile("^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?).(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?).(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?).(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$");
+		final boolean isIP      = patternIP.matcher(args[0]).find();
 		
 		
-		BungeeCord.getInstance().getScheduler().runAsync(UtariaBungee.getInstance(), new Runnable() {@Override public void run() {
+		BungeeCord.getInstance().getScheduler().runAsync(UtariaBungee.getInstance(), () -> {
 			if(!isIP){
-				
+
 				if(args.length >= 2){
 					printPlayerSanction(sender, args[0], args[1]);
 					return;
 				}
-				
+
 				final String        playername = args[0];
 				final Database      database   = UtariaBungee.getDatabase();
 				final ProxiedPlayer player     = BungeeCord.getInstance().getPlayer(playername);
-				
+
 				String onlineString = (player != null) ? "§a - En ligne" : "§c - Hors ligne";
-				
+
 				List<DatabaseSet> sets = database.find("players", DatabaseSet.makeConditions(
 					"playername", args[0]
 				));
-				
+
 				if(sets.size() < 1){
 					sender.sendMessage(new TextComponent(Config.prefix + "§cLe joueur §6" + playername + "§c n'existe pas."));
 					return;
 				}
-				
+
 				DatabaseSet infos = sets.get(0);
 				List<DatabaseSet> ipSets = database.find("players", DatabaseSet.makeConditions("first_ip", infos.getString("first_ip")));
-				
+
 				// Format list of others account :P
 				String ips = "";
-				for(DatabaseSet ipSet : ipSets) 
+				for(DatabaseSet ipSet : ipSets)
 					if(!ipSet.getString("playername").equalsIgnoreCase(playername))
 						ips += "§b" + ipSet.getString("playername") + "§7, ";
-				
+
 				if(ips.length() > 3) ips = ips.substring(0, ips.length() - 2);
 				else ips = "§cAucun";
-				
-				// Format list sanctions :P
+
+				// Va permettre de formatter la liste des sanctions
 				String sanctions = "";
-				
-				List<DatabaseSet> bans  = database.find("bungee_bans", DatabaseSet.makeConditions("player", playername));
+
+				List<DatabaseSet> bans  = database.find("bungee_bans" , DatabaseSet.makeConditions("player", playername));
 				List<DatabaseSet> kicks = database.find("bungee_kicks", DatabaseSet.makeConditions("player", playername));
 				List<DatabaseSet> mutes = database.find("bungee_mutes", DatabaseSet.makeConditions("player", playername));
-				
-				if(bans.size() > 0) sanctions += "§e" + bans.size() + " ban" + ((bans.size() > 1) ? "s" : "") + "§7, ";
+
+				if(bans.size()  > 0) sanctions += "§e" + bans.size()  + " ban"  + ((bans.size() > 1)  ? "s" : "") + "§7, ";
 				if(mutes.size() > 0) sanctions += "§e" + mutes.size() + " mute" + ((mutes.size() > 1) ? "s" : "") + "§7, ";
 				if(kicks.size() > 0) sanctions += "§e" + kicks.size() + " kick" + ((kicks.size() > 1) ? "s" : "") + "§7, ";
-				
-				if(sanctions.length() > 3) sanctions = sanctions.substring(0, sanctions.length() - 2);
-				else sanctions = "§cAucune";
 
-                // Get current sanction (if the player has one)
+				if(sanctions.length() > 3) sanctions = sanctions.substring(0, sanctions.length() - 2);
+				else                       sanctions = "§cAucune";
+
+                // GOn récupère les différentes sanctions du joueur
                 boolean hasSanction = false;
                 String currentSanctions = "§7 - §dActuellement ";
 
-                if(UtariaBungee.getModerationManager().playernameIsTempBanned(player.getName())){
+				if (UtariaBungee.getModerationManager().playernameIsTempBanned(playername)) {
                     hasSanction = true;
                     currentSanctions += "§bbanni, ";
                 }
-                if(UtariaBungee.getModerationManager().playernameIsTempMuted(player.getName())){
+                if (UtariaBungee.getModerationManager().playernameIsTempMuted(playername)) {
                     hasSanction = true;
                     currentSanctions += "§bmuté, ";
                 }
-                if(!currentSanctions.equals("§7 - §dActuellement ")) currentSanctions = currentSanctions.substring(0, currentSanctions.length() - 2);
+                if (!currentSanctions.equals("§7 - §dActuellement "))
+                	currentSanctions = currentSanctions.substring(0, currentSanctions.length() - 2);
 
-				
+				if (sender instanceof ProxiedPlayer) PlayerUtils.sendHorizontalLineWithText((ProxiedPlayer) sender, "§e" + args[0] + onlineString, ChatColor.BLUE);
+				else                                 sender.sendMessage(new TextComponent("§9 ===============[ §e" + args[0] + onlineString + "§r§9 ]==============="));
+
 				sender.sendMessage(new TextComponent(" "));
-				
-				sender.sendMessage(new TextComponent("§9 ===============[ §e" + args[0] + onlineString + "§r§9 ]==============="));
-				sender.sendMessage(new TextComponent(" "));
-				sender.sendMessage(new TextComponent("§7 - Première connexion: §6il y a " + TimeParser.timeToString(infos.getTimestamp("first_connection"), true) + "§7."));
-				sender.sendMessage(new TextComponent("§7 - Dernière connexion: §6il y a " + TimeParser.timeToString(infos.getTimestamp("last_connection"), true) + "§7."));
-				sender.sendMessage(new TextComponent("§7 - Première / Dernière IP: §6" + infos.getString("first_ip") + "§7 / §6" + infos.getString("last_ip") + "§7."));
-				
+				sender.sendMessage(new TextComponent("§7 - Connexion (Pre/Der) : §6" + TimeParser.timeToString(infos.getTimestamp("first_connection"), true) + "§7 / §6" + TimeParser.timeToString(infos.getTimestamp("last_connection"), true) + "§7."));
+				sender.sendMessage(new TextComponent("§7 - IP (Pre/Der) : §6" + infos.getString("first_ip") + "§7 / §6" + infos.getString("last_ip") + "§7."));
+
 				sender.sendMessage(new TextComponent(" "));
 				sender.sendMessage(new TextComponent("§7 - Autres comptes : " + ips + "§7."));
 				sender.sendMessage(new TextComponent("§7 - Sanctions : " + sanctions + "§7."));
                 if(hasSanction) sender.sendMessage(new TextComponent(currentSanctions + "§7."));
-				
+                else            sender.sendMessage(new TextComponent(" "));
+
 				sender.sendMessage(new TextComponent(" "));
+
+				if (sender instanceof ProxiedPlayer) PlayerUtils.sendHorizontalLine((ProxiedPlayer) sender, ChatColor.BLUE);
+				else                                 sender.sendMessage(new TextComponent("§9 =============================================================="));
 			}else{
-				
+
 				String ip = args[0];
-				
-				sender.sendMessage(new TextComponent(" "));
-				
-				sender.sendMessage(new TextComponent("§9=============[ §eIP " + Utils.hideIP(args[0]) + "§r§9 ]============="));
-				
+
+				if (sender instanceof ProxiedPlayer) PlayerUtils.sendHorizontalLineWithText((ProxiedPlayer) sender, "§eIP " + Utils.hideIP(ip), ChatColor.BLUE);
+				else                                 sender.sendMessage(new TextComponent("§9 ===============[ §eIP " + Utils.hideIP(ip) + "§r§9 ]==============="));
+
 				// Format list of ip account :P
 				String accounts = "";
-				List<DatabaseSet> ipSets = UtariaBungee.getDatabase().find("players", DatabaseSet.makeConditions("first_ip", ip));
+
+				List<DatabaseSet> ipSets = UtariaBungee.getDatabase().request("SELECT distinct * from players where first_ip = ? or last_ip = ?;", Arrays.asList(ip, ip));
+
 				for(DatabaseSet ipSet : ipSets)
 					accounts += "§b" + ipSet.getString("playername") + "§7, ";
-							
+
 				if(accounts.length() > 3) accounts = accounts.substring(0, accounts.length() - 2);
 				else accounts = "§cAucun";
-				
+
 				String ipPage;
 				String country = "Indisponible";
-				
+
 				try {
-					
+
 					ipPage = Utils.getUrlSource("http://ip-api.com/csv/" + ip);
 					String[] params = ipPage.split(",");
-					
+
 					if(!params[0].equalsIgnoreCase("fail"))
 						country = params[1] + ", " + params[4];
 					else
 						country = "Inconnu";
-					
+
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
-				
+
 				sender.sendMessage(new TextComponent(" "));
 				sender.sendMessage(new TextComponent("§7 - Comptes sur cette IP : " + accounts + "§7."));
 				sender.sendMessage(new TextComponent("§7 - Provenance : §e" + country + "§7."));
-				
-				sender.sendMessage(new TextComponent(" "));
-				
+
+				if (sender instanceof ProxiedPlayer) { // Permet de formatter le message pour un joueur (dans le tchat)
+					sender.sendMessage(new TextComponent(" "));
+					sender.sendMessage(new TextComponent(" "));
+					sender.sendMessage(new TextComponent(" "));
+					sender.sendMessage(new TextComponent(" "));
+					sender.sendMessage(new TextComponent(" "));
+				}
+
+				if (sender instanceof ProxiedPlayer) PlayerUtils.sendHorizontalLine((ProxiedPlayer) sender, ChatColor.BLUE);
+				else                                 sender.sendMessage(new TextComponent("§9 =============================================================="));
 			}
-		}});
+		});
 	}
 	
 	

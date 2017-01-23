@@ -60,7 +60,7 @@ public class UnmuteCommand extends Command{
 			
 			// Check if the playername is already banned
 			if(!UtariaBungee.getModerationManager().playernameIsTempMuted(playername)){
-				sender.sendMessage(new TextComponent(Config.prefix + "§cLe joueur §6" + playername + "§c n'est pas mut§. Pour plus d'infos, tapez §9/lookup " + playername + "§c."));
+				sender.sendMessage(new TextComponent(Config.prefix + "§cLe joueur §6" + playername + "§c n'est pas muté. Pour plus d'infos, tapez §9/lookup " + playername + "§c."));
 				return;
 			}
 			
@@ -68,22 +68,20 @@ public class UnmuteCommand extends Command{
 
 			// Save the request into the database
 			final String reasonScheduled = reason;
-			UtariaBungee.getInstance().getProxy().getScheduler().runAsync(UtariaBungee.getInstance(), new Runnable() {@Override public void run() {
-				UtariaBungee.getDatabase().save("bungee_mutes", DatabaseSet.makeFields(
-					"unmute_reason", reasonScheduled,
-					"unmuted_by", unmutedBy,
-					"unmute_date", new Timestamp(new Date().getTime())
-				), DatabaseSet.makeConditions("id", muteId+""));
-			}});
+			UtariaBungee.getInstance().getProxy().getScheduler().runAsync(UtariaBungee.getInstance(), () -> UtariaBungee.getDatabase().save("bungee_mutes", DatabaseSet.makeFields(
+				"unmute_reason", reasonScheduled,
+				"unmuted_by", unmutedBy,
+				"unmute_date", new Timestamp(new Date().getTime())
+			), DatabaseSet.makeConditions("id", muteId+"")));
 			
-			sender.sendMessage(new TextComponent(Config.prefix + "§7Le joueur §e" + playername + "§7 est maintenant d§mut§."));
+			sender.sendMessage(new TextComponent(Config.prefix + "§7Le joueur §e" + playername + "§7 est maintenant démuté."));
 		}else{
 			
 			final String ip = args[0];
 			
 			// Check if the player's IP is already banned
 			if(!UtariaBungee.getModerationManager().ipIsBanned(ip) && !UtariaBungee.getModerationManager().ipIsTempBanned(ip)){
-				sender.sendMessage(new TextComponent(Config.prefix + "§cL'IP §6" + ip + "§c n'est pas mut§e. Pour plus d'infos, tapez §9/lookup " + ip + "§c."));
+				sender.sendMessage(new TextComponent(Config.prefix + "§cL'IP §6" + ip + "§c n'est pas mutée. Pour plus d'infos, tapez §9/lookup " + ip + "§c."));
 				return;
 			}
 						
@@ -91,15 +89,13 @@ public class UnmuteCommand extends Command{
 
 			// Save the request into the database
 			final String reasonScheduled = reason;
-			UtariaBungee.getInstance().getProxy().getScheduler().runAsync(UtariaBungee.getInstance(), new Runnable() {@Override public void run() {
-				UtariaBungee.getDatabase().save("bungee_mutes", DatabaseSet.makeFields(
-						"unmute_reason", reasonScheduled,
-						"unmuted_by", unmutedBy,
-						"unmute_date", new Timestamp(new Date().getTime())
-				), DatabaseSet.makeConditions("id", muteId+""));
-			}});
+			UtariaBungee.getInstance().getProxy().getScheduler().runAsync(UtariaBungee.getInstance(), () -> UtariaBungee.getDatabase().save("bungee_mutes", DatabaseSet.makeFields(
+					"unmute_reason", reasonScheduled,
+					"unmuted_by", unmutedBy,
+					"unmute_date", new Timestamp(new Date().getTime())
+			), DatabaseSet.makeConditions("id", muteId+"")));
 			
-			sender.sendMessage(new TextComponent(Config.prefix + "§7L'IP §e" + Utils.hideIP(ip) + "§7 est maintenant d§mut§e."));
+			sender.sendMessage(new TextComponent(Config.prefix + "§7L'IP §e" + Utils.hideIP(ip) + "§7 est maintenant démutée."));
 		}
 	}
 }

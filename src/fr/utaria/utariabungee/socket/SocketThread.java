@@ -17,9 +17,9 @@ public class SocketThread implements Runnable{
 	}
 	
 	@Override
-	public void run(){
+	public void run() {
 		try {
-			while(true){
+			while(true) {
 				if(this.server.getServerInstance() == null || this.server.getServerInstance().isClosed()) continue;
 				Socket socket = this.server.getServerInstance().accept();
 

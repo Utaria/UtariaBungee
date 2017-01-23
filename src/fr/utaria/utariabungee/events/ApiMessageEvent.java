@@ -15,13 +15,13 @@ public class ApiMessageEvent extends Event{
 	
 	private String response = "";
 	
-	public ApiMessageEvent(String message){
+	public ApiMessageEvent(String message) {
 		String[] parts = message.split("/");
 		
 		String action = parts[0];
 		ArrayList<String> params = new ArrayList<>();
 		
-		for(String param : parts[1].split(",")){
+		for (String param : parts[1].split(",")) {
 			param = param.replace("\n", "");
 			params.add(param);
 		}

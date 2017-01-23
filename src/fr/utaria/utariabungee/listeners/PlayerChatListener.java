@@ -23,7 +23,7 @@ public class PlayerChatListener implements Listener{
 
 
 		// Commandes spéciales
-		if(e.getMessage().indexOf("/server") == 0) {
+		if (e.getMessage().indexOf("/server") == 0) {
 			player.chat("/tpto" + e.getMessage().replace("/server", ""));
 			return;
 		}
@@ -33,7 +33,8 @@ public class PlayerChatListener implements Listener{
 		// on ne fait rien, car il doit bien pouvoir taper son mot de passe ;)
 		String defaultServerName = (UtariaBungee.getServerManager().getDefaultServer() != null) ? UtariaBungee.getServerManager().getDefaultServer().getName() : "";
 		String currentServerName = player.getServer().getInfo().getName();
-		if (defaultServerName.equals(currentServerName)) return;
+
+		if (defaultServerName.equals(currentServerName) || currentServerName.equals("default")) return;
 
 		// On ne fait rien si c'est une commande
 		if(e.getMessage().length() > 1 && e.getMessage().substring(0, 1).equals("/")) {

@@ -12,6 +12,7 @@ import fr.utaria.utariabungee.commands.*;
 import fr.utaria.utariabungee.tasks.AutoMessageTask;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Plugin;
+import net.md_5.bungee.api.plugin.PluginManager;
 import net.md_5.bungee.config.Configuration;
 import net.md_5.bungee.config.ConfigurationProvider;
 import net.md_5.bungee.config.YamlConfiguration;
@@ -41,7 +42,7 @@ public class UtariaBungee extends Plugin{
 
 
 
-	public void onEnable(){
+	public void onEnable() {
 		instance = this;
 
 
@@ -70,35 +71,39 @@ public class UtariaBungee extends Plugin{
 
 		
 		// On enregistre les commandes
-		getProxy().getPluginManager().registerCommand(this, new BanCommand());
-		getProxy().getPluginManager().registerCommand(this, new KickCommand());
-		getProxy().getPluginManager().registerCommand(this, new TempBanCommand());
-		getProxy().getPluginManager().registerCommand(this, new TempMuteCommand());
-		getProxy().getPluginManager().registerCommand(this, new UnbanCommand());
-		getProxy().getPluginManager().registerCommand(this, new UnmuteCommand());
-		getProxy().getPluginManager().registerCommand(this, new LookupCommand());
+		PluginManager pm = getProxy().getPluginManager();
 
-		getProxy().getPluginManager().registerCommand(this, new MessageCommand());
-		getProxy().getPluginManager().registerCommand(this, new ResponseCommand());
+		pm.registerCommand(this, new BanCommand());
+		pm.registerCommand(this, new KickCommand());
+		pm.registerCommand(this, new TempBanCommand());
+		pm.registerCommand(this, new TempMuteCommand());
+		pm.registerCommand(this, new UnbanCommand());
+		pm.registerCommand(this, new UnmuteCommand());
+		pm.registerCommand(this, new LookupCommand());
 
-		getProxy().getPluginManager().registerCommand(this, new StaffCommand());
+		pm.registerCommand(this, new MessageCommand());
+		pm.registerCommand(this, new ResponseCommand());
+		pm.registerCommand(this, new SpyCommand());
 
-        getProxy().getPluginManager().registerCommand(this, new UtariaCommand());
-		getProxy().getPluginManager().registerCommand(this, new UptimeCommand());
+		pm.registerCommand(this, new StaffCommand());
 
-		getProxy().getPluginManager().registerCommand(this, new ServerCommand());
-		getProxy().getPluginManager().registerCommand(this, new ServersCommand());
+		pm.registerCommand(this, new UtariaCommand());
+		pm.registerCommand(this, new UptimeCommand());
+		pm.registerCommand(this, new ForceRestartCommand());
+
+		pm.registerCommand(this, new ServerCommand());
+		pm.registerCommand(this, new ServersCommand());
 
 
 		// On enregistre les écouteurs d'évènements
-		getProxy().getPluginManager().registerListener(this, new PlayerJoinListener());
-		getProxy().getPluginManager().registerListener(this, new PlayerChatListener());
-		getProxy().getPluginManager().registerListener(this, new PlayerPingListener());
+		pm.registerListener(this, new PlayerJoinListener());
+		pm.registerListener(this, new PlayerChatListener());
+		pm.registerListener(this, new PlayerPingListener());
 
-		getProxy().getPluginManager().registerListener(this, new TabCompletionListener());
+		pm.registerListener(this, new TabCompletionListener());
 	}
 
-	public void onDisable(){
+	public void onDisable() {
 		// Close socket server
 		if(this.socketServer != null){
 			this.socketServer.stop();

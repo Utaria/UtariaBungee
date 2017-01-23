@@ -6,7 +6,7 @@ import fr.utaria.utariabungee.managers.TaskManager;
 public class RefreshServersTask implements Runnable {
 
 	public RefreshServersTask() {
-		TaskManager.scheduleSyncRepeatingTask("refreshServersTask", this, 0, 20L * 30); // 30sec
+		TaskManager.scheduleSyncRepeatingTask("refreshServersTask", this, 20L * 5, 20L * 30); // 30sec
 	}
 
 

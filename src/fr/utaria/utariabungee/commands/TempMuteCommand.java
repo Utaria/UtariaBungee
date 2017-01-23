@@ -83,16 +83,14 @@ public class TempMuteCommand extends Command{
 			
 			// Save the request into the database
 			final String reasonScheduled = reason;
-			UtariaBungee.getInstance().getProxy().getScheduler().runAsync(UtariaBungee.getInstance(), new Runnable() {@Override public void run() {
-				UtariaBungee.getDatabase().save("bungee_mutes", DatabaseSet.makeFields(
-					"player", playername,
-					"reason", reasonScheduled,
-					"server", server,
-					"muted_by", mutedBy,
-					"date", new Timestamp(new Date().getTime()),
-					"mute_end", new Timestamp(System.currentTimeMillis() + time)
-				));
-			}});
+			UtariaBungee.getInstance().getProxy().getScheduler().runAsync(UtariaBungee.getInstance(), () -> UtariaBungee.getDatabase().save("bungee_mutes", DatabaseSet.makeFields(
+				"player", playername,
+				"reason", reasonScheduled,
+				"server", server,
+				"muted_by", mutedBy,
+				"date", new Timestamp(new Date().getTime()),
+				"mute_end", new Timestamp(System.currentTimeMillis() + time)
+			)));
 			
 		}else{
 			

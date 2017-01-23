@@ -23,11 +23,12 @@ public class AutoMessageTask implements Runnable {
 			"§eDes §ebugs, §eou §esimplement §edes §eavis §e? §ePostez-les §esur §enotre §esite §edédié §a§lfeedback.utaria.fr§7.",
 			// "§eVous pouvez postuler à cette adresse pour rejoindre §enotre §estaff §e: §6recrutement@utaria.fr§e.",
 			"§eLe serveur est en version §b§lALPHA§e : §edes §ebugs §epeuvent §eapparaitre, §emerci §ed'être §atolérant§e.",
-			"§6Meilleurs §6voeux §6à §6tous §8- §7L'équipe §bUtaria"
+			"§eL'économie a évolué, vous §eavez §cperdu §cla §cmoitié §cde §cvotre §cargent... §eMais §eles §evillageois §evous §eattendent §epour §eéchanger §eavec §evous §e!",
+			"§eEnvie §ede §ePVP §e? §eTestez §ele §enouveau §emini-jeu §61vs1 §edisponible §eau §evillage §e"
 		);
 		this.current = -1;
 
-		BungeeCord.getInstance().getScheduler().schedule(UtariaBungee.getInstance(), this, 1, 6, TimeUnit.MINUTES);
+		BungeeCord.getInstance().getScheduler().schedule(UtariaBungee.getInstance(), this, 1, 5, TimeUnit.MINUTES);
 	}
 
 

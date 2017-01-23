@@ -11,7 +11,7 @@ public class TimeParser {
 	public static long stringToTime(String time){
 		errors.clear();
 		
-		long ts = -1;
+		long ts;
 		FormattedTime ft = getFormattedTime(time);
 		
 		if(ft == null) return -1;
@@ -22,7 +22,7 @@ public class TimeParser {
 		//}
 		
 		double factor = getFactorByType(ft.getType());
-		if(factor == -1){
+		if (factor == -1) {
 			errors.add("Nous n'avons pas pu faire la conversion. Erreur système.");
 			return -1;
 		}

@@ -8,6 +8,7 @@ public class Config {
 	public static String  prefix             = "§8[§bUtaria§8] §7";
 
     public static int moderationMinLevel = 30;
+    public static int adminMinLevel      = 40;
 
 	/* [0, 10] = classical members */
 
