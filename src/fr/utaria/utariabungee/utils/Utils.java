@@ -4,6 +4,7 @@ import fr.utaria.utariabungee.UtariaBungee;
 import fr.utaria.utariabungee.database.Database;
 import fr.utaria.utariabungee.database.DatabaseSet;
 import net.md_5.bungee.BungeeCord;
+import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.conf.Configuration;
@@ -37,6 +38,24 @@ public class Utils {
 	public static String ucfirst(String word) {
 		return word.substring(0, 1).toUpperCase() + word.substring(1, word.length());
 	}
+	public static String formatMessageColors(String message) {
+        String words[] = message.split(" ");
+        String color   = null;
+
+        message = "";
+
+        for (String word : words) {
+            if (word.substring(0, 1).equals("&"))
+                color = word.substring(1, 2);
+            else if (color != null)
+                word = '&' + color + word;
+
+            message += word + " ";
+        }
+
+        message = ChatColor.translateAlternateColorCodes('&', message.substring(0, message.length() - 1));
+        return message;
+    }
 
 	public static String getUrlSource(String url) throws IOException {
         URL yahoo = new URL(url);

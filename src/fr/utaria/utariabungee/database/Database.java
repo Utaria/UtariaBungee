@@ -475,6 +475,28 @@ public class Database {
 			closeConnection(conn);
 		}
 	}
+	public int     countRows(String table) {
+		PreparedStatement s    = null;
+		Connection        conn = null;
+		int               res  = -1;
+
+		try {
+			conn = getConnection();
+			assert conn != null;
+
+			s = conn.prepareStatement("SELECT COUNT(*) AS c FROM `" + table + "`");
+
+			ResultSet set = s.executeQuery();
+			res = set.getInt("c");
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			closeStatement(s);
+			closeConnection(conn);
+		}
+
+		return res;
+	}
 
 
 	public String getLastRequest() {
