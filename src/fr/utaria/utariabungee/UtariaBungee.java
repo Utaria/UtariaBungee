@@ -1,5 +1,6 @@
 package fr.utaria.utariabungee;
 
+import fr.utaria.utariabungee.commands.*;
 import fr.utaria.utariabungee.database.Database;
 import fr.utaria.utariabungee.listeners.PlayerChatListener;
 import fr.utaria.utariabungee.listeners.PlayerJoinListener;
@@ -8,7 +9,6 @@ import fr.utaria.utariabungee.listeners.TabCompletionListener;
 import fr.utaria.utariabungee.managers.*;
 import fr.utaria.utariabungee.players.UtariaPlayer;
 import fr.utaria.utariabungee.socket.SocketServer;
-import fr.utaria.utariabungee.commands.*;
 import fr.utaria.utariabungee.tasks.AutoMessageTask;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Plugin;
@@ -17,7 +17,6 @@ import net.md_5.bungee.config.Configuration;
 import net.md_5.bungee.config.ConfigurationProvider;
 import net.md_5.bungee.config.YamlConfiguration;
 
-import javax.xml.crypto.Data;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -36,7 +35,7 @@ public class UtariaBungee extends Plugin{
     private static AntiBotManager     antiBotManager;
 	private static AutoRestartManager autoRestartManager;
 	private static PMManager          pmManager;
-	
+
 	private SocketServer socketServer;
 	private Database     database;
 
@@ -67,7 +66,7 @@ public class UtariaBungee extends Plugin{
 
 
 		// Démarrage du serveur de socket
-		this.socketServer = new SocketServer();
+		this.socketServer = new SocketServer(70000);
 
 		
 		// On enregistre les commandes
@@ -104,12 +103,8 @@ public class UtariaBungee extends Plugin{
 	}
 
 	public void onDisable() {
-		// Close socket server
-		if(this.socketServer != null){
-			this.socketServer.stop();
-			while(!this.socketServer.getServerInstance().isClosed()){}
-		}
-
+		// On éteint le serveur de socket
+		this.socketServer.stop();
 	}
 
 
@@ -169,12 +164,14 @@ public class UtariaBungee extends Plugin{
     	return UtariaBungee.getInstance().database;
 	}
 
+
 	public static void removePlayer(ProxiedPlayer pp) {
     	UtariaPlayer uP = UtariaPlayer.get(pp);
 
     	if( utariaPlayers.contains(uP) )
     		utariaPlayers.remove(uP);
 	}
+
 
 	public static Configuration getConfiguration() {
 		try {
@@ -184,6 +181,10 @@ public class UtariaBungee extends Plugin{
 		}
 		return null;
 	}
+	public        SocketServer  getSocketServer() {
+    	return this.socketServer;
+	}
+
 	public static void          log(String message){
 		getInstance().getProxy().getLogger().info(message);
 	}
