@@ -5,22 +5,18 @@ import fr.utaria.utariabungee.socket.packets.SendingPacket;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.List;
 
 public class SocketServer implements Runnable {
 
 	private int port;
 
-	private Thread                   thread;
-	private SocketPacketManager      packetManager;
-	private List<SocketServerClient> clients;
-	private ServerSocket             server;
-	private boolean                  running;
+	private Thread              thread;
+	private SocketPacketManager packetManager;
+	private ServerSocket        server;
+	private boolean             running;
 
 
 	public SocketServer(int port) {
-		this.clients       = new ArrayList<>();
 		this.packetManager = new SocketPacketManager();
 
 		this.port = port;
@@ -60,7 +56,7 @@ public class SocketServer implements Runnable {
 			while (this.running) {
 				Socket socket = this.server.accept();
 
-				this.clients.add(new SocketServerClient(this, socket));
+				new SocketServerClient(this, socket);
 			}
 
 		} catch (IOException ex) {
@@ -76,11 +72,6 @@ public class SocketServer implements Runnable {
 	}
 
 
-	public void sendPacket(SendingPacket packet) {
-		// On l'envoie à tous les clients
-		for (SocketServerClient client : this.clients)
-			this.sendPacketTo(packet, client);
-	}
 	public void sendPacketTo(SendingPacket packet, SocketServerClient client) {
 		this.getPacketManager().sendPacket(packet, client);
 	}

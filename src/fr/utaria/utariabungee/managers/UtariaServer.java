@@ -15,6 +15,7 @@ public class UtariaServer {
 	private boolean _default;
 
 	private int     _rankLevelNeeded;
+	private int     _socketServerPort;
 
 	private ServerInfo _info;
 
@@ -53,13 +54,19 @@ public class UtariaServer {
 	public int     getRankLevelNeeded() {
 		return this._rankLevelNeeded;
 	}
+	public int     getSocketServerPort() {
+		return this._socketServerPort;
+	}
 	public boolean isDefault() {
 		return this._default;
 	}
 
 
-	public void setDefault(boolean b) {
+	void setDefault(boolean b) {
 		this._default = b;
+	}
+	void setSocketServerPort(int port) {
+		this._socketServerPort = port;
 	}
 
 	public ServerInfo getServerInfo() {

@@ -4,7 +4,7 @@ import net.md_5.bungee.api.ChatColor;
 
 public class Config {
 
-	public static int     socketServerPort   = 24750;
+	public static int     socketServerPort   = 70000;
 	public static String  prefix             = "§8[§bUtaria§8] §7";
 
     public static int moderationMinLevel = 30;

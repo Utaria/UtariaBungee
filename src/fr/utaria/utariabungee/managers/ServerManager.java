@@ -106,6 +106,8 @@ public class ServerManager {
 						result.getInteger("rank_level_needed")
 				);
 
+				uServer.setSocketServerPort(result.getInteger("socket_server_port"));
+
 				if( defaultRes != null && defaultRes.getString("value").equals(uServer.getName()))
 					uServer.setDefault(true);
 

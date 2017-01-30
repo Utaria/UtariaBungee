@@ -66,7 +66,7 @@ public class UtariaBungee extends Plugin{
 
 
 		// Démarrage du serveur de socket
-		this.socketServer = new SocketServer(70000);
+		this.socketServer = new SocketServer(Config.socketServerPort);
 
 		
 		// On enregistre les commandes

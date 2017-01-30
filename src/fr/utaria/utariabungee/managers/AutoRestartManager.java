@@ -1,12 +1,14 @@
 package fr.utaria.utariabungee.managers;
 
 import fr.utaria.utariabungee.Config;
+import fr.utaria.utariabungee.UtariaBungee;
+import fr.utaria.utariabungee.socket.SocketClient;
+import fr.utaria.utariabungee.socket.custompackets.PacketInRestart;
 import fr.utaria.utariabungee.tasks.AutoRestartTask;
 import fr.utaria.utariabungee.utils.Utils;
 import net.md_5.bungee.BungeeCord;
 import net.md_5.bungee.api.chat.TextComponent;
 
-import java.io.IOException;
 import java.util.Calendar;
 
 public class AutoRestartManager {
@@ -106,11 +108,13 @@ public class AutoRestartManager {
         this._restartInProgress = true;
 
 
-        // 3) On redémarre le serveur de connexion
+        // 3) On redémarre le serveur survie
+        // TODO Utilisation du serveur de socket pour faire la requête au serveur
+		/* UtariaServer survie = UtariaBungee.getServerManager().getServerWithName("survie");
 
-        // TODO On lance le fichier stop.sh dans le dossier du serveur
-        // TODO Puis on lance le fichier start.sh pour le redémarrer.
-        // TODO Pour plus d'infos, voir le serveur de développement (serveur survie).
+		SocketClient client = new SocketClient(survie.getIp(), survie.getSocketServerPort());
+		client.sendPacket(new PacketInRestart());
+		client.disconnect(); */
 
 
         // 4) On redémarre les autres serveurs
