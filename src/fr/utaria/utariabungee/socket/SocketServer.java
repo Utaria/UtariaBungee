@@ -1,5 +1,6 @@
 package fr.utaria.utariabungee.socket;
 
+import fr.utaria.utariabungee.UtariaBungee;
 import fr.utaria.utariabungee.socket.packets.SendingPacket;
 
 import java.io.IOException;
@@ -52,6 +53,8 @@ public class SocketServer implements Runnable {
 	public void run() {
 		try {
 			this.server = new ServerSocket(this.port);
+
+			UtariaBungee.getInstance().getLogger().info("Serveur de socket demarré sur le port " + this.port + " !");
 
 			while (this.running) {
 				Socket socket = this.server.accept();

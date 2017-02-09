@@ -2,14 +2,13 @@ package fr.utaria.utariabungee;
 
 import fr.utaria.utariabungee.commands.*;
 import fr.utaria.utariabungee.database.Database;
-import fr.utaria.utariabungee.listeners.PlayerChatListener;
-import fr.utaria.utariabungee.listeners.PlayerJoinListener;
-import fr.utaria.utariabungee.listeners.PlayerPingListener;
-import fr.utaria.utariabungee.listeners.TabCompletionListener;
+import fr.utaria.utariabungee.listeners.*;
 import fr.utaria.utariabungee.managers.*;
 import fr.utaria.utariabungee.players.UtariaPlayer;
 import fr.utaria.utariabungee.socket.SocketServer;
+import fr.utaria.utariabungee.socket.custompackets.PacketInRestart;
 import fr.utaria.utariabungee.tasks.AutoMessageTask;
+import fr.utaria.utariabungee.utils.Utils;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.api.plugin.PluginManager;
@@ -66,7 +65,13 @@ public class UtariaBungee extends Plugin{
 
 
 		// Démarrage du serveur de socket
-		this.socketServer = new SocketServer(Config.socketServerPort);
+		String port = Utils.getConfigValue("socket_server_port_bungee");
+		if (port == null) port = String.valueOf(Config.socketServerPort);
+
+		this.socketServer = new SocketServer(Integer.valueOf(port));
+
+		this.socketServer.getPacketManager().registerListener(new SocketServerListener());
+		this.socketServer.getPacketManager().register(2, PacketInRestart.class);
 
 		
 		// On enregistre les commandes

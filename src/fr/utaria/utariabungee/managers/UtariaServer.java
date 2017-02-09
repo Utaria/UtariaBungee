@@ -1,6 +1,9 @@
 package fr.utaria.utariabungee.managers;
 
 import fr.utaria.utariabungee.UtariaBungee;
+import fr.utaria.utariabungee.socket.SocketClient;
+import fr.utaria.utariabungee.socket.custompackets.PacketOutRestart;
+import fr.utaria.utariabungee.socket.packets.SendingPacket;
 import net.md_5.bungee.api.config.ServerInfo;
 
 import java.net.InetSocketAddress;
@@ -75,9 +78,16 @@ public class UtariaServer {
 
 
 	public boolean restart() {
-		return false;
+		this.sendPacket(new PacketOutRestart());
+		return true;
 	}
+	public void    sendPacket(SendingPacket packet) {
+		System.out.println("ip = " + this.getIp() + " / port = " + this.getSocketServerPort());
+		SocketClient client = new SocketClient(this.getIp(), this.getSocketServerPort());
 
+		client.sendPacket(packet);
+		client.disconnect();
+	}
 
 
 	private void _generateServerInfo() {

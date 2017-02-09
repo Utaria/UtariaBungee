@@ -1,20 +1,29 @@
 package fr.utaria.utariabungee.socket.custompackets;
 
-import fr.utaria.utariabungee.socket.packets.SendingPacket;
+import fr.utaria.utariabungee.socket.packets.ReceivingPacket;
 
-import java.io.DataOutputStream;
+import java.io.DataInputStream;
 import java.io.IOException;
 
-public class PacketInRestart extends SendingPacket {
+public class PacketInRestart extends ReceivingPacket {
 
-	public PacketInRestart() {
-		super(1);
+	private String hostRestart;
+	private int    portRestart;
+
+
+	public PacketInRestart(DataInputStream dis) {
+		super(dis);
 	}
+
+	public String getHost() { return this.hostRestart; }
+	public int    getport() { return this.portRestart; }
+
 
 
 	@Override
-	protected void serialize(DataOutputStream dos) throws IOException {
-
+	protected void deserialize(DataInputStream dis) throws IOException {
+		this.hostRestart = dis.readUTF();
+		this.portRestart = dis.readInt();
 	}
 
 	@Override

@@ -108,23 +108,16 @@ public class AutoRestartManager {
         this._restartInProgress = true;
 
 
-        // 3) On redémarre le serveur survie
-        // TODO Utilisation du serveur de socket pour faire la requête au serveur
-		/* UtariaServer survie = UtariaBungee.getServerManager().getServerWithName("survie");
-
-		SocketClient client = new SocketClient(survie.getIp(), survie.getSocketServerPort());
-		client.sendPacket(new PacketInRestart());
-		client.disconnect(); */
+        // 3) On redémarre le serveur survie en lui envoyant un packet de redémarrage
+        UtariaBungee.getServerManager().getServerWithName("survie").restart();
 
 
         // 4) On redémarre les autres serveurs
+		// Pas besoin pour le moment.
 
 
         // 5) On redémarre le serveur central
-		BungeeCord.getInstance().stop("Redémarrage automatique");
-
-        // TODO A faire avec un fichier stop.sh et start.sh
-        // TODO Les deux fichiers seront appelés par un fichier externe restartbungee.sh par exemple.
+        // (maintenant fait par le SocketServerListener) (temporaire)
     }
 
 
