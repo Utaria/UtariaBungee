@@ -1,12 +1,14 @@
 package fr.utaria.utariabungee.managers;
 
 import fr.utaria.utariabungee.Config;
+import fr.utaria.utariabungee.UtariaBungee;
+import fr.utaria.utariabungee.socket.SocketClient;
+import fr.utaria.utariabungee.socket.custompackets.PacketInRestart;
 import fr.utaria.utariabungee.tasks.AutoRestartTask;
 import fr.utaria.utariabungee.utils.Utils;
 import net.md_5.bungee.BungeeCord;
 import net.md_5.bungee.api.chat.TextComponent;
 
-import java.io.IOException;
 import java.util.Calendar;
 
 public class AutoRestartManager {
@@ -106,21 +108,16 @@ public class AutoRestartManager {
         this._restartInProgress = true;
 
 
-        // 3) On redémarre le serveur de connexion
-
-        // TODO On lance le fichier stop.sh dans le dossier du serveur
-        // TODO Puis on lance le fichier start.sh pour le redémarrer.
-        // TODO Pour plus d'infos, voir le serveur de développement (serveur survie).
+        // 3) On redémarre le serveur survie en lui envoyant un packet de redémarrage
+        UtariaBungee.getServerManager().getServerWithName("survie").restart();
 
 
         // 4) On redémarre les autres serveurs
+		// Pas besoin pour le moment.
 
 
         // 5) On redémarre le serveur central
-		BungeeCord.getInstance().stop("Redémarrage automatique");
-
-        // TODO A faire avec un fichier stop.sh et start.sh
-        // TODO Les deux fichiers seront appelés par un fichier externe restartbungee.sh par exemple.
+        // (maintenant fait par le SocketServerListener) (temporaire)
     }
 
 
@@ -181,7 +178,7 @@ public class AutoRestartManager {
         if( timeToBroadcast <= 60 ) castEnd = timeToBroadcast        + " secondes";
         else                        castEnd = (timeToBroadcast / 60) + " minutes" ;
 
-        BungeeCord.getInstance().broadcast(new TextComponent(Config.prefix + "§cLe serveur va automatiquement redémarrer dans §6" + castEnd + "§c."));
+        BungeeCord.getInstance().broadcast(new TextComponent(Config.prefix + Utils.formatMessageColors("&cLe serveur va redémarrer automatiquement dans &6" + castEnd + "&c.")));
 
     }
     private boolean _isBroadcastNeeded(int upTime) {

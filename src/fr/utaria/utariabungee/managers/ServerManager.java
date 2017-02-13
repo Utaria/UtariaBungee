@@ -6,9 +6,12 @@ import fr.utaria.utariabungee.database.Database;
 import fr.utaria.utariabungee.database.DatabaseSet;
 import fr.utaria.utariabungee.tasks.RefreshServersTask;
 import net.md_5.bungee.api.ProxyServer;
+import net.md_5.bungee.api.config.ServerInfo;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 public class ServerManager {
 
@@ -16,8 +19,11 @@ public class ServerManager {
 
 
 	public ServerManager() {
-		// Désactivation du manager si besoin
-		if (Config.manualServers) return;
+		// On charge les serveurs manuellement depuis la configuration, si on le souhaite.
+		if (Config.manualServers) {
+			this.reloadServersFromConfig();
+			return;
+		}
 
 		// Au démarrage au supprime tous les serveurs de la configuration
 		this.clear();
@@ -77,14 +83,30 @@ public class ServerManager {
 		this.servers.clear();
 
 		// On supprime tous les serveurs, sauf celui par défaut.
-		for(String name : getProxy().getServers().keySet())
-			if( !name.equals("default") )
-				getProxy().getServers().remove(name);
+		getProxy().getServers().entrySet().removeIf(entry -> !entry.getKey().equals("default"));
 	}
 
 
 	private ProxyServer getProxy() {
 		return UtariaBungee.getInstance().getProxy();
+	}
+	private void        reloadServersFromConfig() {
+		int i = 0;
+
+		for (Map.Entry<String, ServerInfo> serverInfo : getProxy().getServers().entrySet()) {
+			// Création d'une instance de l'objet depuis la configuration du proxy
+			UtariaServer uServer = new UtariaServer(
+					i, serverInfo.getKey(),
+					serverInfo.getValue().getAddress().getHostName(),
+					serverInfo.getValue().getAddress().getPort(),
+					0);
+
+			// Par défaut le port du serveur de socket est 100 au-dessus.
+			uServer.setSocketServerPort(serverInfo.getValue().getAddress().getPort() + 1000);
+
+			this.addServer(uServer);
+			i++;
+		}
 	}
 	public  void        reloadServersFromBDD() {
 		final ServerManager self = this;
@@ -105,6 +127,8 @@ public class ServerManager {
 						result.getInteger("port"),
 						result.getInteger("rank_level_needed")
 				);
+
+				uServer.setSocketServerPort(result.getInteger("socket_server_port"));
 
 				if( defaultRes != null && defaultRes.getString("value").equals(uServer.getName()))
 					uServer.setDefault(true);

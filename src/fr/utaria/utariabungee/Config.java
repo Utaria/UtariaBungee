@@ -4,7 +4,7 @@ import net.md_5.bungee.api.ChatColor;
 
 public class Config {
 
-	public static int     socketServerPort   = 24750;
+	public static int     socketServerPort   = 15000;
 	public static String  prefix             = "§8[§bUtaria§8] §7";
 
     public static int moderationMinLevel = 30;
@@ -23,7 +23,7 @@ public class Config {
 
     public static int     maxPlayers    = 100;
     public static String  motd          = "- motd -";
-    public static boolean manualServers = UtariaBungee.getConfiguration().getBoolean("manual_servers");
+    public static boolean manualServers = false;
 
     public static String autoRestartTime    = "5h30";
     public static String autoRestartMessage = ChatColor.RED + "Utaria revient, le serveur est en cours de redémarrage.";

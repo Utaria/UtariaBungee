@@ -1,6 +1,9 @@
 package fr.utaria.utariabungee.managers;
 
 import fr.utaria.utariabungee.UtariaBungee;
+import fr.utaria.utariabungee.socket.SocketClient;
+import fr.utaria.utariabungee.socket.custompackets.PacketOutRestart;
+import fr.utaria.utariabungee.socket.packets.SendingPacket;
 import net.md_5.bungee.api.config.ServerInfo;
 
 import java.net.InetSocketAddress;
@@ -15,6 +18,7 @@ public class UtariaServer {
 	private boolean _default;
 
 	private int     _rankLevelNeeded;
+	private int     _socketServerPort;
 
 	private ServerInfo _info;
 
@@ -53,13 +57,19 @@ public class UtariaServer {
 	public int     getRankLevelNeeded() {
 		return this._rankLevelNeeded;
 	}
+	public int     getSocketServerPort() {
+		return this._socketServerPort;
+	}
 	public boolean isDefault() {
 		return this._default;
 	}
 
 
-	public void setDefault(boolean b) {
+	void setDefault(boolean b) {
 		this._default = b;
+	}
+	void setSocketServerPort(int port) {
+		this._socketServerPort = port;
 	}
 
 	public ServerInfo getServerInfo() {
@@ -68,9 +78,16 @@ public class UtariaServer {
 
 
 	public boolean restart() {
-		return false;
+		this.sendPacket(new PacketOutRestart());
+		return true;
 	}
+	public void    sendPacket(SendingPacket packet) {
+		System.out.println("ip = " + this.getIp() + " / port = " + this.getSocketServerPort());
+		SocketClient client = new SocketClient(this.getIp(), this.getSocketServerPort());
 
+		client.sendPacket(packet);
+		client.disconnect();
+	}
 
 
 	private void _generateServerInfo() {
