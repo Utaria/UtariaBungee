@@ -42,7 +42,7 @@ public class PlayerInfo {
 		return getGradeColor()+"["+getGradeName()+"] ";
 	}
 
-	private void reload(){
+	private void reload() {
 		Database db = UtariaBungee.getDatabase();
 
 		// Récupération du compte depuis la base de données
@@ -52,10 +52,11 @@ public class PlayerInfo {
 		if( set != null ) {
 			this.coins = set.getInteger("coins");
 
-			int grade_id = set.getInteger("grade_id");
-			DatabaseSet gradeSet = db.findFirst("grades", DatabaseSet.makeConditions("id", grade_id+""));
+			DatabaseSet gradeSet = db.findFirst("ranks", DatabaseSet.makeConditions(
+					"id", String.valueOf(set.getInteger("rank_id"))
+			));
 
-			this.rankLevel  = gradeSet.getInteger("rank_level");
+			this.rankLevel  = gradeSet.getInteger("level");
 			this.gradeName  = gradeSet.getString("name");
 			this.gradeColor = gradeSet.getString("color");
 		}
@@ -73,7 +74,7 @@ public class PlayerInfo {
 				"first_connection", currentTimestamp,
 				"last_connection", currentTimestamp,
 				"first_ip", uPlayer.getIP(),
-				"grade_id", 2
+				"rank_id", 2
 		), null, true);
 	}
 
