@@ -40,10 +40,10 @@ public class PlayerJoinListener implements Listener{
 		}
 
 		/*      On interdit les joueurs avec un espace dans leur pseudo      */
-		if (playername.contains(" ")) {
+		if (!playername.matches("^([a-zA-Z0-9_])*$")) {
 			e.setCancelled(true);
-			e.setCancelReason("Votre pseudo comporte un espace donc vous ne pouvez pas vous connecter.");
-			e.getConnection().disconnect(new TextComponent("§cVotre pseudo comporte un espace donc vous ne pouvez pas vous connecter."));
+			e.setCancelReason("Votre pseudo comporte un caractère non valide donc vous ne pouvez pas vous connecter.");
+			e.getConnection().disconnect(new TextComponent("§cVotre pseudo comporte un caractère non valide donc vous ne pouvez pas vous connecter."));
 			return;
 		}
 

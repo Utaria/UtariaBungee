@@ -146,17 +146,24 @@ public class LookupCommand extends Command{
 				else accounts = "§cAucun";
 
 				String ipPage;
-				String country = "Indisponible";
+				String country = "indisponible";
+				String loc     = "indisponible";
+				String fai     = "indisponible";
 
 				try {
 
 					ipPage = Utils.getUrlSource("http://ip-api.com/csv/" + ip);
 					String[] params = ipPage.split(",");
 
-					if(!params[0].equalsIgnoreCase("fail"))
+					if (!params[0].equalsIgnoreCase("fail")) {
 						country = params[1] + ", " + params[4];
-					else
-						country = "Inconnu";
+						loc     = (params.length >  5) ? params[ 5] : "inconnue";
+						fai     = (params.length > 10) ? params[10] : "inconnu";
+					} else {
+						country = "inconnu";
+						loc     = "inconnue";
+						fai     = "inconnu";
+					}
 
 				} catch (IOException e) {
 					e.printStackTrace();
@@ -165,10 +172,10 @@ public class LookupCommand extends Command{
 				sender.sendMessage(new TextComponent(" "));
 				sender.sendMessage(new TextComponent("§7 - Comptes sur cette IP : " + accounts + "§7."));
 				sender.sendMessage(new TextComponent("§7 - Provenance : §e" + country + "§7."));
+				sender.sendMessage(new TextComponent("§7 - Localisation : §e" + loc + "§7."));
+				sender.sendMessage(new TextComponent("§7 - FAI : §a" + fai + "§7."));
 
 				if (sender instanceof ProxiedPlayer) { // Permet de formatter le message pour un joueur (dans le tchat)
-					sender.sendMessage(new TextComponent(" "));
-					sender.sendMessage(new TextComponent(" "));
 					sender.sendMessage(new TextComponent(" "));
 					sender.sendMessage(new TextComponent(" "));
 					sender.sendMessage(new TextComponent(" "));

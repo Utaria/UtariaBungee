@@ -37,7 +37,7 @@ public class TempBanCommand extends Command{
 			}
 		}
 		
-		if(args.length < 2){
+		if (args.length < 2) {
 			sender.sendMessage(new TextComponent(Config.prefix + "Utilisation de la commande : §6/tempban <joueur|ip> <temps> <raison>"));
 			return;
 		}
@@ -66,8 +66,7 @@ public class TempBanCommand extends Command{
 			reason += "§6" + args[i] + " ";
 		reason = reason.substring(0, reason.length()-1);
 		
-		if(!isIP){
-			
+		if(!isIP) {
 			final String playername = args[0];
 			
 			// Check if the playername is already banned
@@ -84,16 +83,14 @@ public class TempBanCommand extends Command{
 			
 			// Save the request into the database
 			final String reasonScheduled = reason;
-			UtariaBungee.getInstance().getProxy().getScheduler().runAsync(UtariaBungee.getInstance(), new Runnable() {@Override public void run() {
-				UtariaBungee.getDatabase().save("bungee_bans", DatabaseSet.makeFields(
-					"player", playername,
-					"reason", reasonScheduled,
-					"server", server,
-					"banned_by", bannedBy,
-					"date", new Timestamp(new Date().getTime()),
-					"ban_end", new Timestamp(System.currentTimeMillis() + time)
-				));
-			}});
+			UtariaBungee.getInstance().getProxy().getScheduler().runAsync(UtariaBungee.getInstance(), () -> UtariaBungee.getDatabase().save("bungee_bans", DatabaseSet.makeFields(
+				"player", playername,
+				"reason", reasonScheduled,
+				"server", server,
+				"banned_by", bannedBy,
+				"date", new Timestamp(new Date().getTime()),
+				"ban_end", new Timestamp(System.currentTimeMillis() + time)
+			)));
 			
 		}else{
 			
@@ -114,15 +111,13 @@ public class TempBanCommand extends Command{
 						
 			// Save the request into the database
 			final String reasonScheduled = reason;
-			UtariaBungee.getInstance().getProxy().getScheduler().runAsync(UtariaBungee.getInstance(), new Runnable() {@Override public void run() {
-				UtariaBungee.getDatabase().save("bungee_bans", DatabaseSet.makeFields(
-					"ip", ip,
-					"reason", reasonScheduled,
-					"banned_by", bannedBy,
-					"date", new Timestamp(new Date().getTime()),
-					"ban_end", new Timestamp(System.currentTimeMillis() + time)
-				));
-			}});
+			UtariaBungee.getInstance().getProxy().getScheduler().runAsync(UtariaBungee.getInstance(), () -> UtariaBungee.getDatabase().save("bungee_bans", DatabaseSet.makeFields(
+				"ip", ip,
+				"reason", reasonScheduled,
+				"banned_by", bannedBy,
+				"date", new Timestamp(new Date().getTime()),
+				"ban_end", new Timestamp(System.currentTimeMillis() + time)
+			)));
 			
 		}
 

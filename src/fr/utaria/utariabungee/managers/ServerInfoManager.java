@@ -51,17 +51,14 @@ public class ServerInfoManager {
     private void runMaintenanceMode(){
         BungeeCord.getInstance().broadcast(new TextComponent(Config.prefix + "§cLe mode maintenance vient d'être §cactivé §csur §cnotre §créseau. §cVous §callez §cêtre §cdéconnectés §cdans §6" + Config.maintenance_logout_delay + " secondes§c."));
 
-        BungeeCord.getInstance().getScheduler().schedule(UtariaBungee.getInstance(), new Runnable() {
-            @Override
-            public void run() {
-                for(ProxiedPlayer player : BungeeCord.getInstance().getPlayers()){
-                    if( UtariaPlayer.get(player).getPlayerInfo().getRankLevel() <= Config.maintenanceMaxKickLevel){
-                        player.disconnect(new TextComponent("§cVous venez d'être déconnecté pour cause d'une maintenance."));
-                    }else{
-                        player.sendMessage(new TextComponent(Config.prefix + "En tant que " + UtariaPlayer.get(player).getPlayerInfo().getGradeColor() + UtariaPlayer.get(player).getPlayerInfo().getGradeName() + "§7, vous n'avez pas été exclu."));
-                    }
-                }
-            }
-        }, Config.maintenance_logout_delay, TimeUnit.SECONDS);
+        BungeeCord.getInstance().getScheduler().schedule(UtariaBungee.getInstance(), () -> {
+			for(ProxiedPlayer player : BungeeCord.getInstance().getPlayers()){
+				if( UtariaPlayer.get(player).getPlayerInfo().getRankLevel() <= Config.maintenanceMaxKickLevel){
+					player.disconnect(new TextComponent("§cVous venez d'être déconnecté pour cause d'une maintenance."));
+				}else{
+					player.sendMessage(new TextComponent(Config.prefix + "En tant que " + UtariaPlayer.get(player).getPlayerInfo().getGradeColor() + UtariaPlayer.get(player).getPlayerInfo().getGradeName() + "§7, vous n'avez pas été exclu."));
+				}
+			}
+		}, Config.maintenance_logout_delay, TimeUnit.SECONDS);
     }
 }
