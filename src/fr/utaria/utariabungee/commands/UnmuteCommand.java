@@ -8,6 +8,7 @@ import java.util.regex.Pattern;
 import fr.utaria.utariabungee.Config;
 import fr.utaria.utariabungee.database.Database;
 import fr.utaria.utariabungee.database.DatabaseSet;
+import fr.utaria.utariabungee.managers.PlayersManager;
 import fr.utaria.utariabungee.utils.BungeeMessages;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -30,7 +31,7 @@ public class UnmuteCommand extends Command{
 		
 		if(sender instanceof ProxiedPlayer){
 			ProxiedPlayer pp = (ProxiedPlayer) sender;
-			if( PlayerInfo.get(pp).getRankLevel() < 29 ){
+			if (!PlayersManager.playerHasRankLevel(pp, 29)) {
 				BungeeMessages.cannotUseCommand(sender);
 				return;
 			}

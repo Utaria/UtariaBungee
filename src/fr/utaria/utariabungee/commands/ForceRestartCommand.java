@@ -1,6 +1,8 @@
 package fr.utaria.utariabungee.commands;
 
+import fr.utaria.utariabungee.Config;
 import fr.utaria.utariabungee.UtariaBungee;
+import fr.utaria.utariabungee.managers.PlayersManager;
 import fr.utaria.utariabungee.players.PlayerInfo;
 import fr.utaria.utariabungee.utils.BungeeMessages;
 import net.md_5.bungee.api.CommandSender;
@@ -19,7 +21,7 @@ public class ForceRestartCommand extends Command {
 
 		if(sender instanceof ProxiedPlayer ) {
 			ProxiedPlayer pp = (ProxiedPlayer) sender;
-			if ( PlayerInfo.get(pp).getRankLevel() < 40 ) {
+			if (!PlayersManager.playerHasRankLevel(pp, Config.adminMinLevel)) {
 				BungeeMessages.cannotUseCommand(sender);
 				return;
 			}

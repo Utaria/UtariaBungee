@@ -1,5 +1,7 @@
 package fr.utaria.utariabungee;
 
+import fr.utaria.utariabungee.chat.SpecialChannel;
+import fr.utaria.utariabungee.chat.SpecialChannels;
 import fr.utaria.utariabungee.commands.*;
 import fr.utaria.utariabungee.database.Database;
 import fr.utaria.utariabungee.listeners.*;
@@ -35,6 +37,9 @@ public class UtariaBungee extends Plugin{
 	private static AutoRestartManager autoRestartManager;
 	private static PMManager          pmManager;
 
+	private static SpecialChannel     staffChannel;
+
+
 	private SocketServer socketServer;
 	private Database     database;
 
@@ -48,7 +53,7 @@ public class UtariaBungee extends Plugin{
 		loadConfiguration();
 
 		// Base de données
-		database = new Database();
+		this.database = new Database();
 
 
 		// Gestionnaires
@@ -60,7 +65,7 @@ public class UtariaBungee extends Plugin{
 		autoRestartManager = new AutoRestartManager();
 		pmManager          = new PMManager();
 
-
+		PlayersManager.reloadRanks();
 		new AutoMessageTask();
 
 
@@ -105,6 +110,13 @@ public class UtariaBungee extends Plugin{
 		pm.registerListener(this, new PlayerPingListener());
 
 		pm.registerListener(this, new TabCompletionListener());
+		pm.registerListener(this, new SpecialChannels());
+
+
+		// On enregistre les canaux de discussions spéciaux
+		staffChannel = new SpecialChannel("Staff", "§7§l[§d§lS§7§l]§r %prefix% %player%: §f%message%", '!');
+
+		SpecialChannels.registerSpecialChannel(staffChannel);
 	}
 
 	public void onDisable() {
@@ -152,6 +164,8 @@ public class UtariaBungee extends Plugin{
 	public static PMManager          getPMManager() {
     	return pmManager;
 	}
+
+	public static SpecialChannel     getStaffChannel() { return staffChannel; }
 
 	public static UtariaPlayer       getPlayer(ProxiedPlayer player) {
 		for (UtariaPlayer utariaPlayer : utariaPlayers) {

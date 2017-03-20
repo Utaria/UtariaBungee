@@ -1,123 +1,101 @@
 package fr.utaria.utariabungee.players;
 
 import fr.utaria.utariabungee.UtariaBungee;
-import fr.utaria.utariabungee.database.Database;
 import fr.utaria.utariabungee.database.DatabaseSet;
+import fr.utaria.utariabungee.managers.PlayersManager;
 import fr.utaria.utariabungee.utils.Utils;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 import java.sql.Timestamp;
-import java.util.Calendar;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class PlayerInfo {
 
-	private UtariaPlayer uPlayer;
+	private UtariaPlayer     uPlayer;
+	private List<UtariaRank> ranks;
 
-	private Integer rankLevel = 0;
-	private Double coins      = 0.0;
+	private int    id;
+	private double coins;
 
-	private String gradeName;
-	private String gradeColor;
 
 	public PlayerInfo(UtariaPlayer utariaPlayer) {
 		this.uPlayer = utariaPlayer;
+		this.id      = -1;
+		this.coins   = 0;
+
+		this.ranks   = new ArrayList<>();
 
 		this.reload();
 	}
 
 
-	public Integer getRankLevel(){
-		return this.rankLevel;
+	public int    getId   () { return this.id;    }
+	public double getCoins() { return this.coins; }
+
+
+	public List<UtariaRank> getRanks           () {
+		List<UtariaRank> ranks = this.ranks;
+		if (ranks.size() == 0) ranks.add(PlayersManager.getDefaultRank());
+		return ranks;
 	}
-	public Double  getCoins(){
-		return this.coins;
+	public UtariaRank       getHighestRank     () {
+		UtariaRank highest = null;
+
+		// On recherche le grade le plus élevé (en level)
+		for (UtariaRank rank : this.ranks)
+			if (highest == null || rank.getLevel() > highest.getLevel())
+				highest = rank;
+
+		// Si le joueur n'a pas de grade, il a forcément le grade par défaut
+		if (highest == null) highest = PlayersManager.getDefaultRank();
+
+		return highest;
 	}
-	public String  getGradeName(){
-		return this.gradeName;
+	public int              getHighestRankLevel() {
+		UtariaRank rank = this.getHighestRank();
+		return (rank == null) ? -1 : rank.getLevel();
 	}
-	public String  getGradeColor(){
-		return "§" + this.gradeColor;
-	}
-	public String  getGradePrefix(){
-		if(getGradeName().equalsIgnoreCase("Membre")) return getGradeColor();
-		return getGradeColor()+"["+getGradeName()+"] ";
+	public boolean          hasRank(UtariaRank rank) {
+		return this.ranks.contains(rank);
 	}
 
-	private void reload() {
-		Database db = UtariaBungee.getDatabase();
 
-		// Récupération du compte depuis la base de données
-		DatabaseSet set = db.findFirst("players", DatabaseSet.makeConditions("playername", uPlayer.getPlayerName()));
 
-		// Si le compte existe, on récupère les données
-		if( set != null ) {
+	/*    Mise à jour des informations de puis la BDD    */
+	private void   reload() {
+		DatabaseSet set = UtariaBungee.getDatabase().findFirst(
+				PlayersManager.PLAYERS_TABLE,
+				DatabaseSet.makeConditions("playername", uPlayer.getPlayerName())
+		);
+
+		if (set != null) {
+			this.id    = set.getInteger("id");
 			this.coins = set.getDouble("coins");
 
+			// On récupère les différent grades du joueur ...
+			List<DatabaseSet> ranksSets = UtariaBungee.getDatabase().find(
+					PlayersManager.PLAYERS_RANKS_TABLE,
+					DatabaseSet.makeConditions("player_id", String.valueOf(this.id))
+			);
 
-			// Récupération du grade le plus évolué
-			List<DatabaseSet> ranksLinksSets = db.find("players_ranks", DatabaseSet.makeConditions(
-					"player_id", String.valueOf(set.getInteger("id"))
-			));
-
-			DatabaseSet highestLevelSet = null;
-
-			for (DatabaseSet rankLinkSet : ranksLinksSets) {
-				DatabaseSet rankSet = db.findFirst("ranks", DatabaseSet.makeConditions(
-						"id", String.valueOf(rankLinkSet.getInteger("rank_id"))
-				));
-
-				if (highestLevelSet == null || highestLevelSet.getInteger("level") < rankSet.getInteger("level"))
-					highestLevelSet = rankSet;
-			}
-
-			if (highestLevelSet == null) {
-				highestLevelSet = db.findFirst("ranks", DatabaseSet.makeConditions(
-						"id", Utils.getConfigValue("default_rank")
-				));
-			}
-
-			this.rankLevel  = highestLevelSet.getInteger("level");
-			this.gradeName  = highestLevelSet.getString("name");
-			this.gradeColor = highestLevelSet.getString("color");
-		}
-		// Sinon créé le compte à partir de valeurs par défaut
-		else {
-			this.createPlayerProfile();
+			// ... puis on les enregistre en mémoire.
+			for (DatabaseSet rankSet : ranksSets)
+				this.ranks.add(PlayersManager.getRankById(rankSet.getInteger("rank_id")));
 		}
 	}
-	private void createPlayerProfile(){
-		Timestamp currentTimestamp = new java.sql.Timestamp(Calendar.getInstance().getTime().getTime());
-
-		UtariaBungee.getDatabase().save("players", DatabaseSet.makeFields(
-				"playername", uPlayer.getPlayerName(),
-				"uuid", uPlayer.getPlayerUniqueId().toString(),
-				"first_connection", currentTimestamp,
-				"last_connection", currentTimestamp,
-				"first_ip", uPlayer.getIP(),
-				"rank_id", 2
-		), null, true);
-	}
 
 
-	public String toString() {
-		return "{PlayerInfo;Player="+uPlayer.getPlayerName()+";RankLevel="+getRankLevel()+";"
-				+ "Grade={Name="+getGradeName()+";Color="+getGradeColor()+"}}";
+	@Override
+	public  String toString() {
+		return "{PlayerInfo #" + this.hashCode() + " (playername=" + uPlayer.getPlayerName() + " ranks=" + Arrays.toString(this.ranks.toArray()) + ")}";
 	}
 
 
 
 	public static PlayerInfo get(ProxiedPlayer player){
 		return UtariaPlayer.get(player).getPlayerInfo();
-	}
-	public static int        getRankLevelByName(String playername) {
-		Database    db  = UtariaBungee.getDatabase();
-		DatabaseSet set = db.findFirst("players", DatabaseSet.makeConditions("playername", playername));
-
-		if( set == null )
-			return -1;
-		else
-			return db.findFirst("ranks", DatabaseSet.makeConditions("id", String.valueOf(set.getInteger("rank_id")))).getInteger("level");
 	}
 
 }

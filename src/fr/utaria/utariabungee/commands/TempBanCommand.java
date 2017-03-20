@@ -8,6 +8,7 @@ import java.util.regex.Pattern;
 import fr.utaria.utariabungee.Config;
 import fr.utaria.utariabungee.database.Database;
 import fr.utaria.utariabungee.database.DatabaseSet;
+import fr.utaria.utariabungee.managers.PlayersManager;
 import fr.utaria.utariabungee.utils.BungeeMessages;
 import fr.utaria.utariabungee.utils.TimeParser;
 import net.md_5.bungee.api.CommandSender;
@@ -31,7 +32,7 @@ public class TempBanCommand extends Command{
 		
 		if(sender instanceof ProxiedPlayer){
 			ProxiedPlayer pp = (ProxiedPlayer) sender;
-			if( PlayerInfo.get(pp).getRankLevel() < Config.moderationMinLevel ){
+			if (!PlayersManager.playerHasRankLevel(pp, Config.moderationMinLevel)) {
 				BungeeMessages.cannotUseCommand(sender);
 				return;
 			}

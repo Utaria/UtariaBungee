@@ -16,17 +16,11 @@ import net.md_5.bungee.event.EventPriority;
 public class PlayerChatListener implements Listener{
 
 	@EventHandler(priority = EventPriority.LOWEST)
-	public void onPlayerChat(ChatEvent e){
+	public void onPlayerChat(ChatEvent e) {
 		if(!(e.getSender() instanceof ProxiedPlayer)) return;
+
 		ProxiedPlayer player = (ProxiedPlayer) e.getSender();
 		String ip = player.getAddress().getHostName();
-
-
-		// Commandes spéciales
-		if (e.getMessage().indexOf("/server") == 0) {
-			player.chat("/tpto" + e.getMessage().replace("/server", ""));
-			return;
-		}
 
 
 		// Si le joueur est sur le serveur par défaut (autrement dit le serveur de connexion),
@@ -44,23 +38,19 @@ public class PlayerChatListener implements Listener{
 			return;
 		}
 
-
-		if(UtariaBungee.getModerationManager().playernameIsTempMuted(player.getName())){
+		// On regarde si le joueur a été muté (ou son IP)
+		if (UtariaBungee.getModerationManager().playernameIsTempMuted(player.getName())) {
 			DatabaseSet infos = UtariaBungee.getModerationManager().getPlayerMuteInformations(player.getName());
 			
 			e.setCancelled(true);
 			player.sendMessage(new TextComponent(Config.prefix + "§7Vous avez été muté le §6" + Utils.dateToString(infos.getTimestamp("date")) + "§7 par §6" + infos.getString("muted_by") + "§7 pour §e" + infos.getString("reason") + "§7. Il vous reste §e" +
-			TimeParser.timeToString(infos.getTimestamp("mute_end")) + "§7 de mute."));
-								
-			return;
-		}
-		
-		if(UtariaBungee.getModerationManager().ipIsTempMuted(ip)){
+				TimeParser.timeToString(infos.getTimestamp("mute_end")) + "§7 de mute."));
+		} else if (UtariaBungee.getModerationManager().ipIsTempMuted(ip)) {
 			DatabaseSet infos = UtariaBungee.getModerationManager().getIpMuteInformations(ip);
 			
 			e.setCancelled(true);
 			player.sendMessage(new TextComponent(Config.prefix + "§7Vous avez été muté le §6" + Utils.dateToString(infos.getTimestamp("date")) + "§7 par §6" + infos.getString("muted_by") + "§7 pour §e" + infos.getString("reason") + "§7. Il vous reste §e" +
-			TimeParser.timeToString(infos.getTimestamp("mute_end")) + "§7 de mute."));
+				TimeParser.timeToString(infos.getTimestamp("mute_end")) + "§7 de mute."));
 		}
 	}
 	

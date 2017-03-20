@@ -1,6 +1,7 @@
 package fr.utaria.utariabungee.commands;
 
 import fr.utaria.utariabungee.Config;
+import fr.utaria.utariabungee.managers.PlayersManager;
 import fr.utaria.utariabungee.players.PlayerInfo;
 import fr.utaria.utariabungee.utils.BungeeMessages;
 import fr.utaria.utariabungee.utils.Utils;
@@ -20,7 +21,7 @@ public class UtariaCommand extends Command {
 
         if(sender instanceof ProxiedPlayer){
             ProxiedPlayer pp = (ProxiedPlayer) sender;
-            if(PlayerInfo.get(pp).getRankLevel() < 40){
+            if (!PlayersManager.playerHasRankLevel(pp, Config.adminMinLevel)) {
                 BungeeMessages.cannotUseCommand(sender);
                 return;
             }

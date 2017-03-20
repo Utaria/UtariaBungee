@@ -4,6 +4,7 @@ import fr.utaria.utariabungee.Config;
 import fr.utaria.utariabungee.UtariaBungee;
 import fr.utaria.utariabungee.database.Database;
 import fr.utaria.utariabungee.database.DatabaseSet;
+import fr.utaria.utariabungee.managers.PlayersManager;
 import fr.utaria.utariabungee.players.PlayerInfo;
 import fr.utaria.utariabungee.utils.BungeeMessages;
 import fr.utaria.utariabungee.utils.PlayerUtils;
@@ -31,7 +32,7 @@ public class LookupCommand extends Command{
 	public void execute(final CommandSender sender, final String[] args) {
 		if(sender instanceof ProxiedPlayer){
 			ProxiedPlayer pp = (ProxiedPlayer) sender;
-			if( PlayerInfo.get(pp).getRankLevel() < Config.moderationMinLevel ){
+			if (!PlayersManager.playerHasRankLevel(pp, Config.adminMinLevel)) {
 				BungeeMessages.cannotUseCommand(sender);
 				return;
 			}

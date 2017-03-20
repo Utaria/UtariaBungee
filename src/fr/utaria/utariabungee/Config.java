@@ -27,5 +27,9 @@ public class Config {
 
     public static String autoRestartTime    = "5h30";
     public static String autoRestartMessage = ChatColor.RED + "Utaria revient, le serveur est en cours de redémarrage.";
+
+
+
+	public final static String UPTODATE_PLUGINS_FOLDER = UtariaBungee.getInstance().getDataFolder().getParent() + "uptodate";
 	
 }

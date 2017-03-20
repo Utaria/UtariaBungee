@@ -2,6 +2,7 @@ package fr.utaria.utariabungee.commands;
 
 import fr.utaria.utariabungee.Config;
 import fr.utaria.utariabungee.UtariaBungee;
+import fr.utaria.utariabungee.managers.PlayersManager;
 import fr.utaria.utariabungee.players.PlayerInfo;
 import fr.utaria.utariabungee.utils.BungeeMessages;
 import net.md_5.bungee.api.CommandSender;
@@ -22,7 +23,7 @@ public class SpyCommand extends Command {
 		ProxiedPlayer pp = (ProxiedPlayer) sender;
 
 		// On vérifie si il a les permissions de faire ça
-		if( PlayerInfo.get(pp).getRankLevel() < Config.adminMinLevel ){
+		if (!PlayersManager.playerHasRankLevel(pp, Config.adminMinLevel)) {
 			BungeeMessages.cannotUseCommand(sender);
 			return;
 		}

@@ -2,14 +2,13 @@ package fr.utaria.utariabungee.listeners;
 
 import fr.utaria.utariabungee.Config;
 import fr.utaria.utariabungee.UtariaBungee;
+import fr.utaria.utariabungee.chat.SpecialChannels;
 import fr.utaria.utariabungee.database.DatabaseSet;
-import fr.utaria.utariabungee.managers.UtariaServer;
+import fr.utaria.utariabungee.managers.PlayersManager;
 import fr.utaria.utariabungee.players.PlayerInfo;
 import fr.utaria.utariabungee.utils.TimeParser;
 import fr.utaria.utariabungee.utils.Utils;
 import net.md_5.bungee.BungeeCord;
-import net.md_5.bungee.api.Callback;
-import net.md_5.bungee.api.ServerPing;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.LoginEvent;
@@ -24,7 +23,7 @@ import java.util.Date;
 public class PlayerJoinListener implements Listener{
 
 	@EventHandler
-	public void onPlayerLogin(LoginEvent e){
+	public void onPlayerLogin(LoginEvent e) {
 		final String playername = e.getConnection().getName();
 		final String ip = e.getConnection().getAddress().getAddress().getHostAddress();
 
@@ -54,14 +53,6 @@ public class PlayerJoinListener implements Listener{
             e.setCancelReason(Config.autoRestartMessage);
             return;
         }
-
-		// Maintenance mode
-		if(Config.maintenance){
-			if(PlayerInfo.getRankLevelByName(playername) <= Config.maintenanceMaxKickLevel){
-				e.setCancelled(true);
-				e.setCancelReason(Config.maintenance_message);
-			}
-		}
 
 		
 		// Check if the player is temp banned
@@ -114,7 +105,7 @@ public class PlayerJoinListener implements Listener{
 	}
 
 	@EventHandler
-	public void onPlayerPostLogin(PostLoginEvent e){
+	public void onPlayerPostLogin(PostLoginEvent e) {
 		final ProxiedPlayer pp = e.getPlayer();
 
 		// Détection d'un bot (première couche)
@@ -132,6 +123,11 @@ public class PlayerJoinListener implements Listener{
 			return;
 		}
 
+		// Mode maintenance
+		if (Config.maintenance)
+			if (!PlayersManager.playerHasRankLevel(pp, Config.maintenanceMaxKickLevel))
+				pp.disconnect(new TextComponent(Config.maintenance_message));
+
 
 		// On met à jour les infos du joueur en base de données
 		BungeeCord.getInstance().getScheduler().runAsync(UtariaBungee.getInstance(), () -> {
@@ -143,10 +139,14 @@ public class PlayerJoinListener implements Listener{
 
 
         // Si le serveur est complet, on déconnecte le joueur, car il ne peut pas se connecter.
-        if(PlayerInfo.get(pp).getRankLevel() < 10 && BungeeCord.getInstance().getOnlineCount() + 1 > Config.maxPlayers){
+        if(PlayerInfo.get(pp).getHighestRankLevel() < 10 && BungeeCord.getInstance().getOnlineCount() + 1 > Config.maxPlayers){
 			pp.disconnect(new TextComponent("§cServeur complet ! Merci de réessayer plus tard."));
 			return;
         }
+
+        // On ajoute le joueur aux canal de discussion "Staff" s'il fait partie du staff
+		if (PlayersManager.playerHasRankLevel(pp, 10))
+			UtariaBungee.getStaffChannel().addPlayer(pp);
 
 
 		// On défini les titres dans la TABLIST
@@ -164,6 +164,9 @@ public class PlayerJoinListener implements Listener{
 
 		// On le supprime du cache des messages privés
 		UtariaBungee.getPMManager().clearFor(pp);
+
+		// On le supprime de tous les canaux de discussion
+		SpecialChannels.removePlayerFromAllChannels(pp);
 	}
 
 }

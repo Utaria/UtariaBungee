@@ -1,5 +1,6 @@
 package fr.utaria.utariabungee.commands;
 
+import fr.utaria.utariabungee.managers.PlayersManager;
 import fr.utaria.utariabungee.players.PlayerInfo;
 import fr.utaria.utariabungee.players.UtariaPlayer;
 import fr.utaria.utariabungee.Config;
@@ -20,15 +21,15 @@ public class StaffCommand extends Command {
     public void execute(CommandSender sender, String[] args) {
         String onlineStaff = "";
 
-        for(ProxiedPlayer player : BungeeCord.getInstance().getPlayers()){
+        for (ProxiedPlayer player : BungeeCord.getInstance().getPlayers()) {
             UtariaPlayer uPlayer = UtariaPlayer.get(player);
-            PlayerInfo info      = uPlayer.getPlayerInfo();
+            PlayerInfo info = uPlayer.getPlayerInfo();
 
-            if(uPlayer.getPlayerInfo().getRankLevel() > 10)
-                onlineStaff += info.getGradePrefix() + info.getGradeColor() + uPlayer.getPlayerName() + "§7, ";
+            if ( PlayersManager.playerHasRankLevel(player, 10) )
+                onlineStaff += info.getHighestRank().getPrefix() + uPlayer.getPlayerName() + "§7, ";
         }
 
-        if(onlineStaff.equals("")) onlineStaff = "§cAucun membre du staff en ligne.";
+        if ( onlineStaff.equals("") ) onlineStaff = "§cAucun membre du staff en ligne.";
         else onlineStaff = "§7Staff en ligne : " + onlineStaff.substring(0, onlineStaff.length() - 2) + ".";
 
         sender.sendMessage(new TextComponent(Config.prefix + onlineStaff));

@@ -111,6 +111,14 @@ public class Utils {
 	    BungeeCord.getInstance().getConsole().sendMessage(new TextComponent(message));
     }
 
+    public static boolean isInteger(String str) {
+        try {
+            Integer.parseInt(str);
+            return true;
+        } catch (Exception ex) {
+            return false;
+        }
+    }
 
 
     public static String getConfigValue(String key){

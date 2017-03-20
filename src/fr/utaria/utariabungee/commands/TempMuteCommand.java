@@ -4,6 +4,7 @@ import fr.utaria.utariabungee.Config;
 import fr.utaria.utariabungee.UtariaBungee;
 import fr.utaria.utariabungee.database.Database;
 import fr.utaria.utariabungee.database.DatabaseSet;
+import fr.utaria.utariabungee.managers.PlayersManager;
 import fr.utaria.utariabungee.players.PlayerInfo;
 import fr.utaria.utariabungee.utils.BungeeMessages;
 import fr.utaria.utariabungee.utils.TimeParser;
@@ -30,7 +31,7 @@ public class TempMuteCommand extends Command{
 		
 		if(sender instanceof ProxiedPlayer){
 			ProxiedPlayer pp = (ProxiedPlayer) sender;
-			if( PlayerInfo.get(pp).getRankLevel() < 29 ){
+			if (!PlayersManager.playerHasRankLevel(pp, 29)) {
 				BungeeMessages.cannotUseCommand(sender);
 				return;
 			}

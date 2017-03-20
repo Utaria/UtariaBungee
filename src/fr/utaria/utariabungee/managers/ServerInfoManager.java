@@ -3,6 +3,7 @@ package fr.utaria.utariabungee.managers;
 import fr.utaria.utariabungee.Config;
 import fr.utaria.utariabungee.UtariaBungee;
 import fr.utaria.utariabungee.players.UtariaPlayer;
+import fr.utaria.utariabungee.players.UtariaRank;
 import fr.utaria.utariabungee.tasks.RefreshServerInfoTask;
 import fr.utaria.utariabungee.utils.Utils;
 import net.md_5.bungee.BungeeCord;
@@ -53,10 +54,13 @@ public class ServerInfoManager {
 
         BungeeCord.getInstance().getScheduler().schedule(UtariaBungee.getInstance(), () -> {
 			for(ProxiedPlayer player : BungeeCord.getInstance().getPlayers()){
-				if( UtariaPlayer.get(player).getPlayerInfo().getRankLevel() <= Config.maintenanceMaxKickLevel){
+				if (!PlayersManager.playerHasRankLevel(player, Config.maintenanceMaxKickLevel)) {
 					player.disconnect(new TextComponent("§cVous venez d'être déconnecté pour cause d'une maintenance."));
-				}else{
-					player.sendMessage(new TextComponent(Config.prefix + "En tant que " + UtariaPlayer.get(player).getPlayerInfo().getGradeColor() + UtariaPlayer.get(player).getPlayerInfo().getGradeName() + "§7, vous n'avez pas été exclu."));
+				} else {
+					UtariaRank playerRank = PlayersManager.getPlayerHighestRank(player);
+
+					assert playerRank != null;
+					player.sendMessage(new TextComponent(Config.prefix + "En tant que " + playerRank.getColor() + playerRank.getName() + "§7, vous n'avez pas été exclu."));
 				}
 			}
 		}, Config.maintenance_logout_delay, TimeUnit.SECONDS);

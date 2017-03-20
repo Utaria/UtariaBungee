@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import fr.utaria.utariabungee.managers.PlayersManager;
 import fr.utaria.utariabungee.players.PlayerInfo;
 import fr.utaria.utariabungee.database.Database;
 import fr.utaria.utariabungee.database.DatabaseSet;
@@ -30,7 +31,7 @@ public class KickCommand extends Command{
 		
 		if(sender instanceof ProxiedPlayer){
 			ProxiedPlayer pp = (ProxiedPlayer) sender;
-			if( PlayerInfo.get(pp).getRankLevel() < Config.moderationMinLevel ){
+			if (!PlayersManager.playerHasRankLevel(pp, Config.moderationMinLevel)) {
 				BungeeMessages.cannotUseCommand(sender);
 				return;
 			}

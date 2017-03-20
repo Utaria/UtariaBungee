@@ -9,7 +9,10 @@ import fr.utaria.utariabungee.utils.Utils;
 import net.md_5.bungee.BungeeCord;
 import net.md_5.bungee.api.chat.TextComponent;
 
+import java.io.*;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 public class AutoRestartManager {
 
@@ -118,6 +121,75 @@ public class AutoRestartManager {
 
         // 5) On redémarre le serveur central
         // (maintenant fait par le SocketServerListener) (temporaire)
+    }
+
+    /*------------------------------*/
+	/*  MISE A JOUR DES PLUGINS     */
+	/*------------------------------*/
+    public boolean updatePlugins() {
+        File folderUptodatePlugins = new File(Config.UPTODATE_PLUGINS_FOLDER);
+        List<File[]> pluginsToUpdate       = new ArrayList<>();
+
+
+        // On créé le dossier avec les plugins à jour si besoin.
+        if (!folderUptodatePlugins.exists())
+            if (!folderUptodatePlugins.mkdirs())
+                return false;
+
+        // On regarde tous les plugins qu'il y a dans ce dossier,
+        // et on enregistre ceux à mettre à jour.
+        File[] pluginFiles = folderUptodatePlugins.listFiles();
+        if (pluginFiles == null) return false;
+
+        for (File pluginFile : pluginFiles) {
+            File curPluginFile = new File(UtariaBungee.getInstance().getDataFolder().getParent() + "/" + pluginFile.getName());
+
+            try {
+                if (!curPluginFile.exists() || !com.google.common.io.Files.equal(curPluginFile, pluginFile))
+                    pluginsToUpdate.add(new File[] {pluginFile, curPluginFile});
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        if (pluginsToUpdate.size() == 0) return false;
+
+        // Si des plugins doivent être mis à jour, on le fait,
+        // en déplaçant les nouveaux dans le dossier "plugins/".
+        for (File[] pluginOperation : pluginsToUpdate) {
+            File from = pluginOperation[0];
+            File to   = pluginOperation[1];
+
+            InputStream in  = null;
+            OutputStream out = null;
+
+            // On copie le fichier via les méthodes binaires, pour éviter
+            // d'avoir une erreur car le fichier est utilisé par un autre
+            // processus.
+            try {
+                in  = new BufferedInputStream(new FileInputStream(from));
+                out = new BufferedOutputStream(new FileOutputStream(to));
+
+                byte[] buffer = new byte[1024];
+                int    numRead;
+
+                while ((numRead = in.read(buffer)) != -1)
+                    out.write(buffer, 0, numRead);
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            } finally {
+                try {
+                    if (in  != null) in.close();
+                    if (out != null) out.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        }
+
+        return true;
     }
 
 

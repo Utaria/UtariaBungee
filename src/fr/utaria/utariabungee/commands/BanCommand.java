@@ -7,6 +7,7 @@ import java.util.regex.Pattern;
 
 import fr.utaria.utariabungee.Config;
 import fr.utaria.utariabungee.database.Database;
+import fr.utaria.utariabungee.managers.PlayersManager;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -27,9 +28,9 @@ public class BanCommand extends Command{
 	@Override
 	public void execute(CommandSender sender, String[] args) {
 		
-		if(sender instanceof ProxiedPlayer){
+		if (sender instanceof ProxiedPlayer) {
 			ProxiedPlayer pp = (ProxiedPlayer) sender;
-			if( PlayerInfo.get(pp).getRankLevel() < Config.moderationMinLevel ){
+			if (!PlayersManager.playerHasRankLevel(pp, Config.moderationMinLevel)) {
 				BungeeMessages.cannotUseCommand(sender);
 				return;
 			}
