@@ -13,9 +13,9 @@ import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 import net.md_5.bungee.event.EventPriority;
 
-public class PlayerChatListener implements Listener{
+public class PlayerChatListener implements Listener {
 
-	@EventHandler(priority = EventPriority.LOWEST)
+	@EventHandler(priority = EventPriority.LOW)
 	public void onPlayerChat(ChatEvent e) {
 		if(!(e.getSender() instanceof ProxiedPlayer)) return;
 
@@ -28,7 +28,11 @@ public class PlayerChatListener implements Listener{
 		String defaultServerName = (UtariaBungee.getServerManager().getDefaultServer() != null) ? UtariaBungee.getServerManager().getDefaultServer().getName() : "";
 		String currentServerName = player.getServer().getInfo().getName();
 
-		if (defaultServerName.equals(currentServerName) || currentServerName.equals("default")) return;
+		// Retourne 127.0.0.1 si le joueur se connecte en local (mode dev)
+		boolean devMode = player.getAddress().getAddress().getHostAddress().equals("127.0.0.1");
+
+		if (!devMode && (defaultServerName.equals(currentServerName) || currentServerName.equals("default")))
+			return;
 
 		// On ne fait rien si c'est une commande
 		if(e.getMessage().length() > 1 && e.getMessage().substring(0, 1).equals("/")) {

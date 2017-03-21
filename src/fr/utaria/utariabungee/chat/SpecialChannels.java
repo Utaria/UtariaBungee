@@ -47,12 +47,12 @@ public class SpecialChannels implements Listener {
 	}
 
 
-	@EventHandler(priority = EventPriority.NORMAL)
-	public void onPlayerChat(ChatEvent e) {
-		if(!(e.getSender() instanceof ProxiedPlayer)) return;
-		ProxiedPlayer player = (ProxiedPlayer) e.getSender();
+	@EventHandler(priority = EventPriority.HIGH)
+	public void onPlayerSendMessage(ChatEvent e) {
+		if (!(e.getSender() instanceof ProxiedPlayer)) return;
+		if (e.isCancelled()) return;
 
-		e.setCancelled(SpecialChannels.tryToSendInChannel(player, e.getMessage()));
+		e.setCancelled(SpecialChannels.tryToSendInChannel((ProxiedPlayer) e.getSender(), e.getMessage()));
 	}
 
 }
