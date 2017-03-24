@@ -9,6 +9,7 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.List;
 
 public class PlayerInfo {
@@ -83,7 +84,19 @@ public class PlayerInfo {
 			// ... puis on les enregistre en mémoire.
 			for (DatabaseSet rankSet : ranksSets)
 				this.ranks.add(PlayersManager.getRankById(rankSet.getInteger("rank_id")));
-		}
+		} else
+			this.createPlayerProfile();
+	}
+	private void createPlayerProfile(){
+		Timestamp currentTimestamp = new java.sql.Timestamp(Calendar.getInstance().getTime().getTime());
+
+		UtariaBungee.getDatabase().save("players", DatabaseSet.makeFields(
+				"playername", uPlayer.getPlayerName(),
+				"uuid", uPlayer.getPlayerUniqueId().toString(),
+				"first_connection", currentTimestamp,
+				"last_connection", currentTimestamp,
+				"first_ip", uPlayer.getIP()
+		), null, true);
 	}
 
 

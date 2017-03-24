@@ -61,17 +61,16 @@ public class LookupCommand extends Command{
 
 				String onlineString = (player != null) ? "§a - En ligne" : "§c - Hors ligne";
 
-				List<DatabaseSet> sets = database.find("players", DatabaseSet.makeConditions(
-					"playername", args[0]
+				DatabaseSet set = database.findFirst("players", DatabaseSet.makeConditions(
+					"playername", playername
 				));
 
-				if(sets.size() < 1){
+				if (set == null) {
 					sender.sendMessage(new TextComponent(Config.prefix + "§cLe joueur §6" + playername + "§c n'existe pas."));
 					return;
 				}
 
-				DatabaseSet infos = sets.get(0);
-				List<DatabaseSet> ipSets = database.find("players", DatabaseSet.makeConditions("first_ip", infos.getString("first_ip")));
+				List<DatabaseSet> ipSets = database.find("players", DatabaseSet.makeConditions("first_ip", set.getString("first_ip")));
 
 				// Format list of others account :P
 				String ips = "";
@@ -115,8 +114,8 @@ public class LookupCommand extends Command{
 				else                                 sender.sendMessage(new TextComponent("§9 ===============[ §e" + args[0] + onlineString + "§r§9 ]==============="));
 
 				sender.sendMessage(new TextComponent(" "));
-				sender.sendMessage(new TextComponent("§7 - Connexion (Pre/Der) : §6" + TimeParser.timeToString(infos.getTimestamp("first_connection"), true) + "§7 / §6" + TimeParser.timeToString(infos.getTimestamp("last_connection"), true) + "§7."));
-				sender.sendMessage(new TextComponent("§7 - IP (Pre/Der) : §6" + infos.getString("first_ip") + "§7 / §6" + infos.getString("last_ip") + "§7."));
+				sender.sendMessage(new TextComponent("§7 - Connexion (Pre/Der) : §6" + TimeParser.timeToString(set.getTimestamp("first_connection"), true) + "§7 / §6" + TimeParser.timeToString(set.getTimestamp("last_connection"), true) + "§7."));
+				sender.sendMessage(new TextComponent("§7 - IP (Pre/Der) : §6" + set.getString("first_ip") + "§7 / §6" + set.getString("last_ip") + "§7."));
 
 				sender.sendMessage(new TextComponent(" "));
 				sender.sendMessage(new TextComponent("§7 - Autres comptes : " + ips + "§7."));
@@ -128,7 +127,7 @@ public class LookupCommand extends Command{
 
 				if (sender instanceof ProxiedPlayer) PlayerUtils.sendHorizontalLine((ProxiedPlayer) sender, ChatColor.BLUE);
 				else                                 sender.sendMessage(new TextComponent("§9 =============================================================="));
-			}else{
+			} else {
 
 				String ip = args[0];
 

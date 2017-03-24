@@ -55,52 +55,33 @@ public class PlayerJoinListener implements Listener{
         }
 
 		
-		// Check if the player is temp banned
+		// On regarde si le joueur peut rejoindre le serveur (au niveau de la modération)
 		if(UtariaBungee.getModerationManager().playernameIsTempBanned(playername)){
 			DatabaseSet infos = UtariaBungee.getModerationManager().getPlayerBanInformations(playername);
 			
-			if(infos.getTimestamp("ban_end") != null){
-				e.setCancelled(true);
-				e.setCancelReason("§4§lVous avez été banni le§r §6§l" + Utils.dateToString(infos.getTimestamp("date")) + "§r§4§l par§r§6§l " + infos.getString("banned_by") + "§r§4§l. Raison: §r§e" + infos.getString("reason") + "§r§4§l. Il vous reste §r§e" +
-				TimeParser.timeToString(infos.getTimestamp("ban_end")) + "§r§4§l de ban.");
-								
-				return;
-			}
-		}
-		
-		// Check if the player's IP is temp banned
-		if(UtariaBungee.getModerationManager().ipIsTempBanned(ip)){
+			e.setCancelled(true);
+			e.setCancelReason("§4§lVous avez été banni le§r §6§l" + Utils.dateToString(infos.getTimestamp("date")) + "§r§4§l par§r§6§l " +
+					infos.getString("banned_by") + "§r§4§l. Raison: §r§e" + infos.getString("reason") + "§r§4§l. Il vous reste §r§e" +
+					TimeParser.timeToString(infos.getTimestamp("ban_end")) + "§r§4§l de ban.");
+		} else if (UtariaBungee.getModerationManager().ipIsTempBanned(ip)) {
 			DatabaseSet infos = UtariaBungee.getModerationManager().getIpBanInformations(ip);
-			
-			if(infos.getTimestamp("ban_end") != null){					
-				e.setCancelled(true);
-				e.setCancelReason("§4§lVous avez été banni le§r §6§l" + Utils.dateToString(infos.getTimestamp("date")) + "§r§4§l par§r§6§l " + infos.getString("banned_by") + "§r§4§l. Raison: §r§e" + infos.getString("reason") + "§r§4§l. Il vous reste §r§e" +
-				TimeParser.timeToString(infos.getTimestamp("ban_end")) + "§r§4§l de ban.");
-										
-				return;
-			}
-		}
-		
-		
-		
-		// Check if the player is banned
-		if(UtariaBungee.getModerationManager().playernameIsBanned(playername)){
+
+			e.setCancelled(true);
+			e.setCancelReason("§4§lVous avez été banni le§r §6§l" + Utils.dateToString(infos.getTimestamp("date")) + "§r§4§l par§r§6§l " +
+					infos.getString("banned_by") + "§r§4§l. Raison: §r§e" + infos.getString("reason") + "§r§4§l. Il vous reste §r§e" +
+					TimeParser.timeToString(infos.getTimestamp("ban_end")) + "§r§4§l de ban.");
+		} else if (UtariaBungee.getModerationManager().playernameIsBanned(playername)){
 			DatabaseSet infos = UtariaBungee.getModerationManager().getPlayerBanInformations(playername);
 			
 			e.setCancelled(true);
-			e.setCancelReason("§4§lVous avez été banni d§finitivement le§r §6§l" + Utils.dateToString(infos.getTimestamp("date")) + "§r§4§l par§r§6§l " + infos.getString("banned_by") + "§r§4§l. Raison: §r§e" + infos.getString("reason") + ".");
-			
-			return;
-		}
-		
-		// Check if the player's IP is banned
-		if(UtariaBungee.getModerationManager().ipIsBanned(ip)) {
+			e.setCancelReason("§4§lVous avez été banni définitivement le§r §6§l" + Utils.dateToString(infos.getTimestamp("date")) +
+					"§r§4§l par§r§6§l " + infos.getString("banned_by") + "§r§4§l. Raison: §r§e" + infos.getString("reason") + ".");
+		} else if (UtariaBungee.getModerationManager().ipIsBanned(ip)) {
 			DatabaseSet infos = UtariaBungee.getModerationManager().getIpBanInformations(ip);
 
 			e.setCancelled(true);
-			e.setCancelReason("§4§lVous avez été banni d§finitivement le§r §6§l" + Utils.dateToString(infos.getTimestamp("date")) + "§r§4§l par§r§6§l " + infos.getString("banned_by") + "§r§4§l. Raison: §r§e" + infos.getString("reason") + ".");
-
-			return;
+			e.setCancelReason("§4§lVous avez été banni définitivement le§r §6§l" + Utils.dateToString(infos.getTimestamp("date")) +
+					"§r§4§l par§r§6§l " + infos.getString("banned_by") + "§r§4§l. Raison: §r§e" + infos.getString("reason") + ".");
 		}
 	}
 

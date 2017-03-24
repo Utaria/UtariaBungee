@@ -69,15 +69,13 @@ public class UnbanCommand extends Command{
 
 			// Save the request into the database
 			final String reasonScheduled = reason;
-			UtariaBungee.getInstance().getProxy().getScheduler().runAsync(UtariaBungee.getInstance(), new Runnable() {@Override public void run() {
-				UtariaBungee.getDatabase().save("bungee_bans", DatabaseSet.makeFields(
-					"unban_reason", reasonScheduled,
-					"unbanned_by", unbannedBy,
-					"unban_date", new Timestamp(new Date().getTime())
-				), DatabaseSet.makeConditions("id", banId+""));
-			}});
+			UtariaBungee.getInstance().getProxy().getScheduler().runAsync(UtariaBungee.getInstance(), () -> UtariaBungee.getDatabase().save("bungee_bans", DatabaseSet.makeFields(
+				"unban_reason", reasonScheduled,
+				"unbanned_by", unbannedBy,
+				"unban_date", new Timestamp(new Date().getTime())
+			), DatabaseSet.makeConditions("id", banId+"")));
 			
-			sender.sendMessage(new TextComponent(Config.prefix + "§7Le joueur §e" + playername + "§7 est maintenant d§banni."));
+			sender.sendMessage(new TextComponent(Config.prefix + "§7Le joueur §e" + playername + "§7 est maintenant débanni."));
 		}else{
 			
 			final String ip = args[0];
@@ -92,15 +90,13 @@ public class UnbanCommand extends Command{
 
 			// Save the request into the database
 			final String reasonScheduled = reason;
-			UtariaBungee.getInstance().getProxy().getScheduler().runAsync(UtariaBungee.getInstance(), new Runnable() {@Override public void run() {
-				UtariaBungee.getDatabase().save("bungee_bans", DatabaseSet.makeFields(
-						"unban_reason", reasonScheduled,
-						"unbanned_by", unbannedBy,
-						"unban_date", new Timestamp(new Date().getTime())
-				), DatabaseSet.makeConditions("id", banId+""));
-			}});
+			UtariaBungee.getInstance().getProxy().getScheduler().runAsync(UtariaBungee.getInstance(), () -> UtariaBungee.getDatabase().save("bungee_bans", DatabaseSet.makeFields(
+					"unban_reason", reasonScheduled,
+					"unbanned_by", unbannedBy,
+					"unban_date", new Timestamp(new Date().getTime())
+			), DatabaseSet.makeConditions("id", banId+"")));
 			
-			sender.sendMessage(new TextComponent(Config.prefix + "§7L'IP §e" + Utils.hideIP(ip) + "§7 est maintenant d§bannie."));
+			sender.sendMessage(new TextComponent(Config.prefix + "§7L'IP §e" + Utils.hideIP(ip) + "§7 est maintenant débannie."));
 		}
 	}
 }
