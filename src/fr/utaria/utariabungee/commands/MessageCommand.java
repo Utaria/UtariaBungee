@@ -19,14 +19,14 @@ public class MessageCommand extends Command {
 
 	@Override
 	public void execute(CommandSender sender, String[] args) {
-		if( !(sender instanceof ProxiedPlayer) ) {
+		if (!(sender instanceof ProxiedPlayer)) {
 			BungeeMessages.cannotUseCommand(sender);
 			return;
 		}
 
 		ProxiedPlayer pp = (ProxiedPlayer) sender;
 
-		if( args.length < 2 ) {
+		if (args.length < 2) {
 			pp.sendMessage(new TextComponent(Config.prefix + "§cUtilisation: /msg <joueur> <message>"));
 			return;
 		}
@@ -39,17 +39,18 @@ public class MessageCommand extends Command {
 
 
 
-		if( playername.equals(pp.getName()) ) {
-			pp.sendMessage(new TextComponent(Config.prefix + "§cAction impossible."));
-			return;
-		}
-
-		if( BungeeCord.getInstance().getPlayer(playername) == null ) {
-			pp.sendMessage(new TextComponent(Config.prefix + "§cLe joueur §6" + playername + "§c est hors-ligne."));
+		if (playername.equals(pp.getName())) {
+			pp.sendMessage(new TextComponent(Config.prefix + "§cPourquoi vouloir faire ça ?"));
 			return;
 		}
 
 		ProxiedPlayer ppDest = BungeeCord.getInstance().getPlayer(playername);
+
+		if (ppDest == null) {
+			pp.sendMessage(new TextComponent(Config.prefix + "§cLe joueur §6" + playername + "§c est hors-ligne."));
+			return;
+		}
+
 
 		UtariaBungee.getPMManager().sendPrivateMessageTo(pp, ppDest, message);
 	}

@@ -38,7 +38,7 @@ public class AntiBotManager {
 
 
 	public boolean ipIsBot(String ip) {
-		if (!this.strIsIp(ip)) return false;
+		if (!this.strIsIp(ip))             return false;
 		if (this.ipBlackList.contains(ip)) return true;
 
 		if (this.isProxy(ip)) {

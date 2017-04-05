@@ -5,7 +5,6 @@ import fr.utaria.utariabungee.UtariaBungee;
 import fr.utaria.utariabungee.database.Database;
 import fr.utaria.utariabungee.database.DatabaseSet;
 import fr.utaria.utariabungee.managers.PlayersManager;
-import fr.utaria.utariabungee.players.PlayerInfo;
 import fr.utaria.utariabungee.utils.BungeeMessages;
 import fr.utaria.utariabungee.utils.PlayerUtils;
 import fr.utaria.utariabungee.utils.TimeParser;
@@ -20,7 +19,6 @@ import net.md_5.bungee.api.plugin.Command;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
-import java.util.regex.Pattern;
 
 public class LookupCommand extends Command{
 
@@ -30,27 +28,31 @@ public class LookupCommand extends Command{
 
 	@Override
 	public void execute(final CommandSender sender, final String[] args) {
+		boolean hasTotalAccess = !(sender instanceof ProxiedPlayer);
+
 		if(sender instanceof ProxiedPlayer){
 			ProxiedPlayer pp = (ProxiedPlayer) sender;
-			if (!PlayersManager.playerHasRankLevel(pp, Config.adminMinLevel)) {
+			if (!PlayersManager.playerHasRankLevel(pp, 29)) {
 				BungeeMessages.cannotUseCommand(sender);
 				return;
-			}
+			} else if (PlayersManager.playerHasRankLevel(pp, Config.adminMinLevel))
+				hasTotalAccess = true;
 		}
+
+		final boolean fHta = hasTotalAccess;
+
 		
-		if(args.length < 1 || args[0].equals("")){
-			sender.sendMessage(new TextComponent(Config.prefix + "§7Utilisation: §6/lookup <joueur|ip>"));
+		if (args.length < 1 || args[0].equals("")) {
+			if (hasTotalAccess) sender.sendMessage(new TextComponent(Config.prefix + "§7Utilisation: §6/lookup <joueur|ip>"));
+			else                sender.sendMessage(new TextComponent(Config.prefix + "§7Utilisation: §6/lookup <joueur>"   ));
+
 			return;
 		}
 		
-		      Pattern patternIP = Pattern.compile("^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?).(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?).(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?).(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$");
-		final boolean isIP      = patternIP.matcher(args[0]).find();
-		
-		
 		BungeeCord.getInstance().getScheduler().runAsync(UtariaBungee.getInstance(), () -> {
-			if(!isIP){
+			if (!Utils.stringIsIP(args[0])) {
 
-				if(args.length >= 2){
+				if (args.length >= 2 && fHta) {
 					printPlayerSanction(sender, args[0], args[1]);
 					return;
 				}
@@ -70,16 +72,19 @@ public class LookupCommand extends Command{
 					return;
 				}
 
-				List<DatabaseSet> ipSets = database.find("players", DatabaseSet.makeConditions("first_ip", set.getString("first_ip")));
+				List<DatabaseSet> ipSets = database.request(
+						"SELECT distinct * FROM players WHERE first_ip = ? OR last_ip = ? OR first_ip = ? OR last_ip = ?",
+						Arrays.asList(set.getString("first_ip"), set.getString("first_ip"), set.getString("last_ip"), set.getString("last_ip"))
+				);
 
-				// Format list of others account :P
-				String ips = "";
-				for(DatabaseSet ipSet : ipSets)
-					if(!ipSet.getString("playername").equalsIgnoreCase(playername))
-						ips += "§b" + ipSet.getString("playername") + "§7, ";
+				// On formatte la liste des autres comptes sur la même IP
+				StringBuilder ips = new StringBuilder();
+				for (DatabaseSet ipSet : ipSets)
+					if (!ipSet.getString("playername").equalsIgnoreCase(playername))
+						ips.append("§b").append(ipSet.getString("playername")).append("§7, ");
 
-				if(ips.length() > 3) ips = ips.substring(0, ips.length() - 2);
-				else ips = "§cAucun";
+				if(ips.length() > 3) ips = new StringBuilder(ips.substring(0, ips.length() - 2));
+				else ips = new StringBuilder("§cAucun");
 
 				// Va permettre de formatter la liste des sanctions
 				String sanctions = "";
@@ -95,7 +100,7 @@ public class LookupCommand extends Command{
 				if(sanctions.length() > 3) sanctions = sanctions.substring(0, sanctions.length() - 2);
 				else                       sanctions = "§cAucune";
 
-                // GOn récupère les différentes sanctions du joueur
+                // On récupère les différentes sanctions du joueur
                 boolean hasSanction = false;
                 String currentSanctions = "§7 - §dActuellement ";
 
@@ -115,35 +120,40 @@ public class LookupCommand extends Command{
 
 				sender.sendMessage(new TextComponent(" "));
 				sender.sendMessage(new TextComponent("§7 - Connexion (Pre/Der) : §6" + TimeParser.timeToString(set.getTimestamp("first_connection"), true) + "§7 / §6" + TimeParser.timeToString(set.getTimestamp("last_connection"), true) + "§7."));
-				sender.sendMessage(new TextComponent("§7 - IP (Pre/Der) : §6" + set.getString("first_ip") + "§7 / §6" + set.getString("last_ip") + "§7."));
+				if (fHta) sender.sendMessage(new TextComponent("§7 - IP (Pre/Der) : §6" + set.getString("first_ip") + "§7 / §6" + set.getString("last_ip") + "§7."));
+				else      sender.sendMessage(new TextComponent("§7 - IP (Pre/Der) : §8§knn.nnn.nnn.nn§7 / §8§knn.nnn.nnn.nn§7."));
 
 				sender.sendMessage(new TextComponent(" "));
 				sender.sendMessage(new TextComponent("§7 - Autres comptes : " + ips + "§7."));
 				sender.sendMessage(new TextComponent("§7 - Sanctions : " + sanctions + "§7."));
-                if(hasSanction) sender.sendMessage(new TextComponent(currentSanctions + "§7."));
-                else            sender.sendMessage(new TextComponent(" "));
+                if (hasSanction) sender.sendMessage(new TextComponent(currentSanctions + "§7."));
+                else             sender.sendMessage(new TextComponent(" "));
 
 				sender.sendMessage(new TextComponent(" "));
 
 				if (sender instanceof ProxiedPlayer) PlayerUtils.sendHorizontalLine((ProxiedPlayer) sender, ChatColor.BLUE);
 				else                                 sender.sendMessage(new TextComponent("§9 =============================================================="));
 			} else {
+				if (!fHta) {
+					sender.sendMessage(new TextComponent(Config.prefix + "§cVous n'avez pas accès à ces informations."));
+					return;
+				}
 
 				String ip = args[0];
 
 				if (sender instanceof ProxiedPlayer) PlayerUtils.sendHorizontalLineWithText((ProxiedPlayer) sender, "§eIP " + Utils.hideIP(ip), ChatColor.BLUE);
 				else                                 sender.sendMessage(new TextComponent("§9 ===============[ §eIP " + Utils.hideIP(ip) + "§r§9 ]==============="));
 
-				// Format list of ip account :P
-				String accounts = "";
+				// On formatte la liste des autres comptes présent sur la même IP
+				StringBuilder accounts = new StringBuilder();
 
 				List<DatabaseSet> ipSets = UtariaBungee.getDatabase().request("SELECT distinct * from players where first_ip = ? or last_ip = ?;", Arrays.asList(ip, ip));
 
 				for(DatabaseSet ipSet : ipSets)
-					accounts += "§b" + ipSet.getString("playername") + "§7, ";
+					accounts.append("§b").append(ipSet.getString("playername")).append("§7, ");
 
-				if(accounts.length() > 3) accounts = accounts.substring(0, accounts.length() - 2);
-				else accounts = "§cAucun";
+				if (accounts.length() > 3) accounts = new StringBuilder(accounts.substring(0, accounts.length() - 2));
+				else                       accounts = new StringBuilder("§cAucun");
 
 				String ipPage;
 				String country = "indisponible";

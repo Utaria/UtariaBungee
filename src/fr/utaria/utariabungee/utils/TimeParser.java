@@ -8,29 +8,14 @@ public class TimeParser {
 	
 	private static ArrayList<String> errors = new ArrayList<>();
 
-	public static long stringToTime(String time){
+	public static FormattedTime stringToTime(String time){
 		errors.clear();
-		
-		long ts;
-		FormattedTime ft = getFormattedTime(time);
-		
-		if(ft == null) return -1;
-		
-		//if(ft.getNumber() < 1){
-		//	errors.add("Vous devez entrer un nombre supérieur à 1.");
-		//	return -1;
-		//}
-		
-		double factor = getFactorByType(ft.getType());
-		if (factor == -1) {
+		FormattedTime ft = FormattedTime.fromString(time);
+
+		if (ft != null && ft.getTime() == -1)
 			errors.add("Nous n'avons pas pu faire la conversion. Erreur système.");
-			return -1;
-		}
-		
-		long rsTime = (long) (ft.getNumber() * factor);
-		ts = rsTime * 60 * 1000;
-		
-		return ts;
+
+		return ft;
 	}
 	public static String timeToString(Timestamp timestamp){
 		return timeToString(timestamp, false);
@@ -124,25 +109,7 @@ public class TimeParser {
 
 		return r;
 	}
-	
-	
-	private static FormattedTime getFormattedTime(String time){
-		String type = time.substring(time.length()-1, time.length());
-		String number = time.substring(0, time.length()-1);
-		
-		if(!isNumeric(number)){
-			errors.add("La date a mal été formattée.");
-			return null;
-		}
-		
-		if(!typeIsValid(type)){
-			errors.add("Le type de date envoyé n'est pas correct.");
-			return null;
-		}
-		
-		return new FormattedTime(type, Integer.parseInt(number));
-	}
-	
+
 	
 	private static boolean isNumeric(String s) {
 	    return s.matches("\\d+");
@@ -152,46 +119,89 @@ public class TimeParser {
 				|| type.equalsIgnoreCase("s") || type.equalsIgnoreCase("j")
 				|| type.equalsIgnoreCase("h") || type.equalsIgnoreCase("i");
 	}
-	private static double getFactorByType(String type){
-		switch (type) {
-			case "a":
-				return 525948.766;
-			case "m":
-				return 43829.0639;
-			case "s":
-				return 10080;
-			case "j":
-				return 1440;
-			case "h":
-				return 60;
-			case "i":
-				return 1;
-			default:
-				return -1;
-		}
-	}
+
 	public static ArrayList<String> getErrors(){
 		return errors;
 	}
-	
-	private static class FormattedTime{
+
+
+	public static class FormattedTime {
 		
-		private String type;
+		private String  type;
 		private Integer number;
+		private long    time;
 		
-		public FormattedTime(String type, Integer number){
-			this.type = type;
+		private FormattedTime(String type, Integer number) {
+			this.type   = type;
 			this.number = number;
+			this.time   = -1;
+
+			this._generateTime();
 		}
-		
-		public String getType(){
-			return this.type;
+
+
+		public String  getType  () { return this.type;   }
+		public Integer getNumber() { return this.number; }
+		public long    getTime  () { return this.time;   }
+
+
+		public boolean smallerThan(String patternTime) {
+			FormattedTime f2 = FormattedTime.fromString(patternTime);
+			return f2 != null && this.getTime() < f2.getTime();
 		}
-		public Integer getNumber(){
-			return this.number;
+		public boolean biggerThan(String patternTime) {
+			FormattedTime f2 = FormattedTime.fromString(patternTime);
+			return f2 != null && this.getTime() > f2.getTime();
 		}
-		
+
+
+		private void _generateTime() {
+			if (this.time > 0L) return;
+
+			double factor = FormattedTime.getFactorByType(this.type);
+			if (factor == -1) return;
+
+			this.time = (long) (this.number * factor) * 60 * 1000;
+		}
+
+
+
+		static FormattedTime fromString(String time) {
+			String type   = time.substring(time.length()-1, time.length());
+			String number = time.substring(0, time.length()-1);
+
+			if (!TimeParser.isNumeric(number)) {
+				errors.add("La date a mal été formattée.");
+				return null;
+			}
+
+			if (!TimeParser.typeIsValid(type)) {
+				errors.add("Le type de date envoyé n'est pas correct.");
+				return null;
+			}
+
+			return new FormattedTime(type, Integer.parseInt(number));
+		}
+
+		static double        getFactorByType(String type) {
+			switch (type) {
+				case "a":              // Année
+					return 525948.766;
+				case "o":              // Mois
+					return 43829.0639;
+				case "w":              // Semaine
+					return 10080;
+				case "j":              // Jour
+					return 1440;
+				case "h":              // Heure
+					return 60;
+				case "m":              // Minute
+					return 1;
+				default:
+					return -1;
+			}
+		}
 		
 	}
-	
+
 }

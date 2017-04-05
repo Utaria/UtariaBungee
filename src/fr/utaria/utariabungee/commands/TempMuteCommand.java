@@ -28,7 +28,7 @@ public class TempMuteCommand extends Command{
 	
 	@Override
 	public void execute(CommandSender sender, String[] args) {
-		
+		// Il faut avoir les droits pour pouvoir faire ça !
 		if(sender instanceof ProxiedPlayer){
 			ProxiedPlayer pp = (ProxiedPlayer) sender;
 			if (!PlayersManager.playerHasRankLevel(pp, 29)) {
@@ -36,94 +36,99 @@ public class TempMuteCommand extends Command{
 				return;
 			}
 		}
-		
-		if(args.length < 2){
+
+		// Aide de la commande
+		if (args.length < 2) {
 			sender.sendMessage(new TextComponent(Config.prefix + "Utilisation de la commande : §6/tempmute §6<joueur|ip> §6<temps> §6<raison>"));
 			return;
 		}
 		
-		String reason = "";
+		StringBuilder reason = new StringBuilder();
 		final String mutedBy = (sender instanceof ProxiedPlayer) ? ((ProxiedPlayer) sender).getDisplayName() : "CONSOLE";
 		
-		Pattern patternIP = Pattern.compile("^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?).(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?).(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?).(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$");
-		Matcher matchIP   = patternIP.matcher(args[0]);
-		boolean isIP = matchIP.find();
+		boolean isIP = Utils.stringIsIP(args[0]);
 		
-		// Parse time
-		String timeString = args[1];
-		final long time = TimeParser.stringToTime(timeString);
+		// On formatte et on récupère le temps indiqué dans la commande
+		final TimeParser.FormattedTime time = TimeParser.stringToTime(args[1]);
 		
-		if(time == -1 && TimeParser.getErrors().size() > 0){
-			sender.sendMessage(new TextComponent(Config.prefix + "§c" + TimeParser.getErrors().get(0)));
+		if ((time == null || time.getTime() == -1)) {
+			if (TimeParser.getErrors().size() > 0)
+				sender.sendMessage(new TextComponent(Config.prefix + "§c" + TimeParser.getErrors().get(0)));
+
 			return;
 		}
+
+		// On limite les modos normaux à 2h de mute
+		if (time.biggerThan(Config.maxModoMuteTime) && sender instanceof ProxiedPlayer && !PlayersManager.playerHasRankLevel((ProxiedPlayer) sender, 30)) {
+			sender.sendMessage(new TextComponent(Config.prefix + "§cVous ne pouvez pas mute plus de §6" + Config.maxModoMuteTime + "§c."));
+			return;
+		}
+
+		final Timestamp tsAdded  = new Timestamp(System.currentTimeMillis() + time.getTime());
+		      String    tsString = TimeParser.timeToString(tsAdded);
 		
-		final Timestamp tsAdded = new Timestamp(System.currentTimeMillis() + time);
-		String tsString   = TimeParser.timeToString(tsAdded);
-		
-		// Parse reason
+		// On génère la raison en fonction des arguments passés à la commande
 		for(int i = 2; i < args.length; i++)
-			reason += "§6" + args[i] + " ";
-		reason = reason.substring(0, reason.length()-1);
+			reason.append("§6").append(args[i]).append(" ");
+
+		reason = new StringBuilder(reason.substring(0, reason.length() - 1));
 		
-		if(!isIP){
-			
+		if (!isIP) {
 			final String playername = args[0];
 			
-			// Check if the playername is already muted
-			if(UtariaBungee.getModerationManager().playernameIsTempMuted(playername)){
+			// On regarde si le pseudo n'a pas déjà été muté
+			if (UtariaBungee.getModerationManager().playernameIsTempMuted(playername)) {
 				sender.sendMessage(new TextComponent(Config.prefix + "§cLe joueur §6" + playername + "§c est déjà muté. Pour plus d'infos, tapez §9/lookup " + playername + "§c."));
 				return;
 			}
 			
-			// Send message 'muted!' to player with this playername
+			// On envoie le message de la sanction au joueur concerné
 			ProxiedPlayer player = UtariaBungee.getInstance().getProxy().getPlayer(playername);
 			if(player != null) player.sendMessage(new TextComponent(Config.prefix + "§7Vous avez été muté §5" + tsString + "§7 par §e" + mutedBy + "§7 pour §6" + reason + "§7."));
 			
-			final String server   = (player != null) ? player.getServer().getInfo().getName() : "none";
+			final String server = (player != null) ? player.getServer().getInfo().getName() : null;
 			
-			// Save the request into the database
-			final String reasonScheduled = reason;
-			UtariaBungee.getInstance().getProxy().getScheduler().runAsync(UtariaBungee.getInstance(), () -> UtariaBungee.getDatabase().save("bungee_mutes", DatabaseSet.makeFields(
-				"player", playername,
-				"reason", reasonScheduled,
-				"server", server,
-				"muted_by", mutedBy,
-				"date", new Timestamp(new Date().getTime()),
-				"mute_end", new Timestamp(System.currentTimeMillis() + time)
-			)));
-			
-		}else{
-			
+			// On sauvegarde la sanction dans la base de données
+			final String reasonScheduled = reason.toString();
+			UtariaBungee.getInstance().getProxy().getScheduler().runAsync(UtariaBungee.getInstance(), () ->
+					UtariaBungee.getDatabase().save("bungee_mutes", DatabaseSet.makeFields(
+						"player"   , playername,
+						"reason"   , reasonScheduled,
+						"server"   , server,
+						"muted_by" , mutedBy,
+						"date"     , new Timestamp(new Date().getTime()),
+						"mute_end" , new Timestamp(System.currentTimeMillis() + time.getTime())
+					))
+			);
+		} else {
 			final String ip = args[0];
 			
-			// Check if the IP is already mutes
-			if(UtariaBungee.getModerationManager().ipIsTempMuted(ip)){
+			// On regarde si l'IP a été déjà été mutée
+			if (UtariaBungee.getModerationManager().ipIsTempMuted(ip)) {
 				sender.sendMessage(new TextComponent(Config.prefix + "§cL'IP §6" + ip + "§c est déjà mutée. Pour plus d'infos, tapez §9/lookup " + ip + "§c."));
 				return;
 			}
 
-			// Send message 'muted!' to all players with this IP
-			for(ProxiedPlayer player : UtariaBungee.getInstance().getProxy().getPlayers()){
-				if(player != null && player.getAddress().getHostName().equalsIgnoreCase(ip)){
+			// On envoie le message aux joueurs sanctionnés avec la même IP
+			for (ProxiedPlayer player : UtariaBungee.getInstance().getProxy().getPlayers())
+				if (player != null && ip.equals(Utils.getPlayerIP(player)))
 					player.sendMessage(new TextComponent(Config.prefix + "§7Vous avez été muté §5" + tsString + "§7 par §e" + mutedBy + "§7 pour §6" + reason + "§7."));
-				}
-			}
-						
-			// Save the request into the database
-			final String reasonScheduled = reason;
-			UtariaBungee.getInstance().getProxy().getScheduler().runAsync(UtariaBungee.getInstance(), new Runnable() {@Override public void run() {
-				UtariaBungee.getDatabase().save("bungee_mutes", DatabaseSet.makeFields(
-					"ip", ip,
-					"reason", reasonScheduled,
-					"muted_by", mutedBy,
-					"date", new Timestamp(new Date().getTime()),
-					"mute_end", new Timestamp(System.currentTimeMillis() + time)
-				));
-			}});
-			
+
+
+			// On sauvegarde la sanction dans la base de données !
+			final String reasonScheduled = reason.toString();
+			UtariaBungee.getInstance().getProxy().getScheduler().runAsync(UtariaBungee.getInstance(), () ->
+					UtariaBungee.getDatabase().save("bungee_mutes", DatabaseSet.makeFields(
+						"ip"       , ip,
+						"reason"   , reasonScheduled,
+						"muted_by" , mutedBy,
+						"date"     , new Timestamp(new Date().getTime()),
+						"mute_end" , new Timestamp(System.currentTimeMillis() + time.getTime())
+					))
+			);
 		}
 
+		// On envoie le message global, pour que tout le monde le sache !
 		UtariaBungee.getInstance().getProxy().broadcast(new TextComponent(Config.prefix + "§e" + ((isIP) ? Utils.hideIP(args[0]) : args[0]) + "§7 a été muté §c" + tsString + "§7 pour §6" + reason + "§7."));
 	}
 }

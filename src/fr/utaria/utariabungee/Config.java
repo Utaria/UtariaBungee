@@ -7,7 +7,7 @@ public class Config {
 	public static int     socketServerPort   = 15000;
 	public static String  prefix             = "§8[§bUtaria§8] §7";
 
-    public static int moderationMinLevel = 30;
+    public static int moderationMinLevel = 31;
     public static int adminMinLevel      = 40;
 
 	/* [0, 10] = classical members */
@@ -27,6 +27,10 @@ public class Config {
 
     public static String autoRestartTime    = "5h30";
     public static String autoRestartMessage = ChatColor.RED + "Utaria revient, le serveur est en cours de redémarrage.";
+
+
+    public static String maxModoMuteTime    = "2h";
+    public static String maxModoPlusBanTime = "7j";
 
 
 

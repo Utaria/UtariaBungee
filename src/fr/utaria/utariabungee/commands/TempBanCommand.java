@@ -29,95 +29,101 @@ public class TempBanCommand extends Command{
 	
 	@Override
 	public void execute(CommandSender sender, String[] args) {
-		
-		if(sender instanceof ProxiedPlayer){
+		// Il faut avoir les droits pour pouvoir faire ça !
+		if (sender instanceof ProxiedPlayer) {
 			ProxiedPlayer pp = (ProxiedPlayer) sender;
-			if (!PlayersManager.playerHasRankLevel(pp, Config.moderationMinLevel)) {
+			if (!PlayersManager.playerHasRankLevel(pp, 30)) {
 				BungeeMessages.cannotUseCommand(sender);
 				return;
 			}
 		}
-		
+
+		// Aide de la commande
 		if (args.length < 2) {
 			sender.sendMessage(new TextComponent(Config.prefix + "Utilisation de la commande : §6/tempban <joueur|ip> <temps> <raison>"));
 			return;
 		}
 		
-		String reason = "";
+		StringBuilder  reason = new StringBuilder();
 		final String bannedBy = (sender instanceof ProxiedPlayer) ? ((ProxiedPlayer) sender).getDisplayName() : "CONSOLE";
 		
-		Pattern patternIP = Pattern.compile("^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?).(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?).(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?).(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$");
-		Matcher matchIP   = patternIP.matcher(args[0]);
-		boolean isIP = matchIP.find();
-		
-		// Parse time
-		String timeString = args[1];
-		final long time = TimeParser.stringToTime(timeString);
-		
-		if(time == -1 && TimeParser.getErrors().size() > 0){
-			sender.sendMessage(new TextComponent(Config.prefix + "§c" + TimeParser.getErrors().get(0)));
+		boolean isIP = Utils.stringIsIP(args[0]);
+
+		// On formatte et on récupère le temps indiqué dans la commande
+		final TimeParser.FormattedTime time = TimeParser.stringToTime(args[1]);
+
+		if ((time == null || time.getTime() == -1)) {
+			if (TimeParser.getErrors().size() > 0)
+				sender.sendMessage(new TextComponent(Config.prefix + "§c" + TimeParser.getErrors().get(0)));
+
+			return;
+		}
+
+		// On limite les modo+ à 7j de ban
+		if (time.biggerThan(Config.maxModoPlusBanTime) && sender instanceof ProxiedPlayer && !PlayersManager.playerHasRankLevel((ProxiedPlayer) sender, Config.adminMinLevel)) {
+			sender.sendMessage(new TextComponent(Config.prefix + "§cVous ne pouvez pas ban plus de §6" + Config.maxModoPlusBanTime + "§c."));
 			return;
 		}
 		
-		final Timestamp tsAdded = new Timestamp(System.currentTimeMillis() + time);
+		final Timestamp tsAdded = new Timestamp(System.currentTimeMillis() + time.getTime());
 		String tsString   = TimeParser.timeToString(tsAdded);
 		
-		// Parse reason
+		// On génère la raison en fonction des arguments passés à la commande
 		for(int i = 2; i < args.length; i++)
-			reason += "§6" + args[i] + " ";
-		reason = reason.substring(0, reason.length()-1);
+			reason.append("§6").append(args[i]).append(" ");
+		reason = new StringBuilder(reason.substring(0, reason.length() - 1));
 		
-		if(!isIP) {
+		if (!isIP) {
 			final String playername = args[0];
 			
-			// Check if the playername is already banned
-			if(UtariaBungee.getModerationManager().playernameIsTempBanned(playername)){
+			// On regarde si le pseudo n'a pas déjà été banni
+			if (UtariaBungee.getModerationManager().playernameIsTempBanned(playername)) {
 				sender.sendMessage(new TextComponent(Config.prefix + "§cLe joueur §6" + playername + "§c est déjà banni. Pour plus d'infos, tapez §9/lookup " + playername + "§c."));
 				return;
 			}
 			
-			// Ban player with this playername
+			// On envoie le message de la sanction au joueur concerné
 			ProxiedPlayer player = UtariaBungee.getInstance().getProxy().getPlayer(playername);
 			if(player != null) player.disconnect(new TextComponent("Vous avez été banni §e" + tsString + "§r par §6" + bannedBy + "§r pour la raison : §e'" + reason + "'§r."));
 			
-			final String server   = (player != null) ? player.getServer().getInfo().getName() : "none";
+			final String server = (player != null) ? player.getServer().getInfo().getName() : "none";
 			
-			// Save the request into the database
-			final String reasonScheduled = reason;
+			// On sauvegarde la sanction dans la base de données
+			final String reasonScheduled = reason.toString();
 			UtariaBungee.getInstance().getProxy().getScheduler().runAsync(UtariaBungee.getInstance(), () -> UtariaBungee.getDatabase().save("bungee_bans", DatabaseSet.makeFields(
 				"player", playername,
 				"reason", reasonScheduled,
 				"server", server,
 				"banned_by", bannedBy,
 				"date", new Timestamp(new Date().getTime()),
-				"ban_end", new Timestamp(System.currentTimeMillis() + time)
+				"ban_end", new Timestamp(System.currentTimeMillis() + time.getTime())
 			)));
 			
-		}else{
+		} else {
 			
 			final String ip = args[0];
-			
-			// Check if the IP is already banned
+
+			// On regarde si l'IP a été déjà été bannie
 			if(UtariaBungee.getModerationManager().ipIsTempBanned(ip)){
 				sender.sendMessage(new TextComponent(Config.prefix + "§cL'IP §6" + ip + "§c est déjà bannie. Pour plus d'infos, tapez §9/lookup " + ip + "§c."));
 				return;
 			}
 
-			// Ban all players with this IP
+			// On envoie le message aux joueurs sanctionnés avec la même IP
 			for(ProxiedPlayer player : UtariaBungee.getInstance().getProxy().getPlayers()){
 				if(player != null && player.getAddress().getHostName().equalsIgnoreCase(ip)){
 					player.disconnect(new TextComponent("Vous avez été banni §e" + tsString + "§r par §6" + bannedBy + "§r pour la raison : §e'" + reason + "'§r."));
 				}
 			}
 						
-			// Save the request into the database
-			final String reasonScheduled = reason;
+			// On sauvegarde la sanction dans la base de données
+			final String reasonScheduled = reason.toString();
 			UtariaBungee.getInstance().getProxy().getScheduler().runAsync(UtariaBungee.getInstance(), () -> UtariaBungee.getDatabase().save("bungee_bans", DatabaseSet.makeFields(
 				"ip", ip,
 				"reason", reasonScheduled,
 				"banned_by", bannedBy,
 				"date", new Timestamp(new Date().getTime()),
-				"ban_end", new Timestamp(System.currentTimeMillis() + time)
+				"ban_end", new Timestamp(System.currentTimeMillis() + time.getTime())
 			)));
 			
 		}

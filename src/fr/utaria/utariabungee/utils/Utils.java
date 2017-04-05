@@ -17,6 +17,7 @@ import java.net.*;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.regex.Pattern;
 
 public class Utils {
 
@@ -30,9 +31,14 @@ public class Utils {
         return Integer.parseInt(p[0]) * 3600 + Integer.parseInt(p[1]) * 60;
     }
 	
-	public static String hideIP(String ip) {
+	public static String  hideIP(String ip) {
 		return ip.substring(0, ip.length()-2) + "??";
 	}
+	public static boolean stringIsIP(String str) {
+		return Pattern.compile("^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?).(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?).(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?).(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$")
+				.matcher(str)
+				.find();
+    }
 
 	
 	public static String ucfirst(String word) {
