@@ -80,7 +80,7 @@ public class LookupCommand extends Command{
 				// On formatte la liste des autres comptes sur la même IP
 				StringBuilder ips = new StringBuilder();
 				for (DatabaseSet ipSet : ipSets)
-					if (!ipSet.getString("playername").equalsIgnoreCase(playername))
+					if (!ipSet.getString("playername").equals(playername))
 						ips.append("§b").append(ipSet.getString("playername")).append("§7, ");
 
 				if(ips.length() > 3) ips = new StringBuilder(ips.substring(0, ips.length() - 2));

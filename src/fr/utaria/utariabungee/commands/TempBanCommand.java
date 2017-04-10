@@ -110,11 +110,9 @@ public class TempBanCommand extends Command{
 			}
 
 			// On envoie le message aux joueurs sanctionnés avec la même IP
-			for(ProxiedPlayer player : UtariaBungee.getInstance().getProxy().getPlayers()){
-				if(player != null && player.getAddress().getHostName().equalsIgnoreCase(ip)){
+			for (ProxiedPlayer player : UtariaBungee.getInstance().getProxy().getPlayers())
+				if (player != null && ip.equals(Utils.getPlayerIP(player)))
 					player.disconnect(new TextComponent("Vous avez été banni §e" + tsString + "§r par §6" + bannedBy + "§r pour la raison : §e'" + reason + "'§r."));
-				}
-			}
 						
 			// On sauvegarde la sanction dans la base de données
 			final String reasonScheduled = reason.toString();

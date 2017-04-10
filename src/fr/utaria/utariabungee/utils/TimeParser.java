@@ -92,6 +92,39 @@ public class TimeParser {
 		if(r.length() > 1) r = r.substring(0, r.length() - 1);
 		return r;
 	}
+	public static String timeToShortString(Timestamp timestamp, boolean reverse){
+		String r = "";
+
+		long timeRes = timestamp.getTime() - System.currentTimeMillis();
+		if(reverse) timeRes = System.currentTimeMillis() - timestamp.getTime();
+
+		timeRes /= 1000;
+
+		if (timeRes > 86400) {
+			long days = timeRes / 86400;
+			if (days > 1) r += days + " jours ";
+			else          r += days + " jour ";
+
+			timeRes -= days * 86400;
+		}
+
+		if (timeRes > 3600) {
+			long hours = timeRes / 3600;
+			if (hours > 1) r += hours + " heures ";
+			else           r += hours + " heure ";
+
+			timeRes -= hours * 3600;
+		}
+
+		if (timeRes > 60) {
+			long mins = timeRes / 60;
+			if(mins > 1) r += mins + " minutes ";
+			else         r += mins + " minute ";
+		}
+
+		if(r.length() > 1) r = r.substring(0, r.length() - 1);
+		return r;
+	}
 
 	public static String secToHumanReadableString(int sec) {
 		String r = "";
@@ -115,9 +148,9 @@ public class TimeParser {
 	    return s.matches("\\d+");
 	}
 	private static boolean typeIsValid(String type){
-		return type.equalsIgnoreCase("a") || type.equalsIgnoreCase("m")
+		return type.equalsIgnoreCase("a") || type.equalsIgnoreCase("o")
 				|| type.equalsIgnoreCase("s") || type.equalsIgnoreCase("j")
-				|| type.equalsIgnoreCase("h") || type.equalsIgnoreCase("i");
+				|| type.equalsIgnoreCase("h") || type.equalsIgnoreCase("m");
 	}
 
 	public static ArrayList<String> getErrors(){

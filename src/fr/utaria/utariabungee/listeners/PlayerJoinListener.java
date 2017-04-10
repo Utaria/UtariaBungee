@@ -48,7 +48,7 @@ public class PlayerJoinListener implements Listener{
 
 
 		// On regarde si le serveur est actuellement en train de redémarrer
-		if(UtariaBungee.getAutoRestartManager().restartIsInProgress()) {
+		if (UtariaBungee.getAutoRestartManager().restartIsInProgress()) {
             e.setCancelled(true);
             e.setCancelReason(Config.autoRestartMessage);
             return;
@@ -62,14 +62,14 @@ public class PlayerJoinListener implements Listener{
 			e.setCancelled(true);
 			e.setCancelReason("§4§lVous avez été banni le§r §6§l" + Utils.dateToString(infos.getTimestamp("date")) + "§r§4§l par§r§6§l " +
 					infos.getString("banned_by") + "§r§4§l. Raison: §r§e" + infos.getString("reason") + "§r§4§l. Il vous reste §r§e" +
-					TimeParser.timeToString(infos.getTimestamp("ban_end")) + "§r§4§l de ban.");
+					TimeParser.timeToShortString(infos.getTimestamp("ban_end"), false) + "§r§4§l de ban.");
 		} else if (UtariaBungee.getModerationManager().ipIsTempBanned(ip)) {
 			DatabaseSet infos = UtariaBungee.getModerationManager().getIpBanInformations(ip);
 
 			e.setCancelled(true);
 			e.setCancelReason("§4§lVous avez été banni le§r §6§l" + Utils.dateToString(infos.getTimestamp("date")) + "§r§4§l par§r§6§l " +
 					infos.getString("banned_by") + "§r§4§l. Raison: §r§e" + infos.getString("reason") + "§r§4§l. Il vous reste §r§e" +
-					TimeParser.timeToString(infos.getTimestamp("ban_end")) + "§r§4§l de ban.");
+					TimeParser.timeToShortString(infos.getTimestamp("ban_end"), false) + "§r§4§l de ban.");
 		} else if (UtariaBungee.getModerationManager().playernameIsBanned(playername)){
 			DatabaseSet infos = UtariaBungee.getModerationManager().getPlayerBanInformations(playername);
 			
@@ -120,7 +120,7 @@ public class PlayerJoinListener implements Listener{
 
 
         // Si le serveur est complet, on déconnecte le joueur, car il ne peut pas se connecter.
-        if(PlayerInfo.get(pp).getHighestRankLevel() < 10 && BungeeCord.getInstance().getOnlineCount() + 1 > Config.maxPlayers){
+        if (PlayerInfo.get(pp).getHighestRankLevel() < 10 && BungeeCord.getInstance().getOnlineCount() + 1 > Config.maxPlayers) {
 			pp.disconnect(new TextComponent("§cServeur complet ! Merci de réessayer plus tard."));
 			return;
         }
