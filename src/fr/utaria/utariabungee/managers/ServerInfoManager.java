@@ -16,15 +16,15 @@ public class ServerInfoManager {
 
     private boolean firstCheck = true;
 
-    public ServerInfoManager(){
+    public ServerInfoManager() {
         this.refresh();
         new RefreshServerInfoTask();
     }
 
-    public void refresh(){
-        String maxPlayers  = Utils.getConfigValue("maxplayers");
-        String motd        = Utils.getConfigValue("motd");
-        String maintenance = Utils.getConfigValue("maintenance");
+    public void refresh() {
+        String maxPlayers       = Utils.getConfigValue("maxplayers");
+        String motd             = Utils.getConfigValue("motd");
+        String maintenance      = Utils.getConfigValue("maintenance");
         String maintenance_motd = Utils.getConfigValue("maintenance_motd");
 
 

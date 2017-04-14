@@ -35,5 +35,6 @@ public class Config {
 
 
 	public final static String UPTODATE_PLUGINS_FOLDER = UtariaBungee.getInstance().getDataFolder().getParent() + "uptodate";
+	public final static int    CONFIG_CACHE_EXPIRATION = 55; // (en sec)
 	
 }

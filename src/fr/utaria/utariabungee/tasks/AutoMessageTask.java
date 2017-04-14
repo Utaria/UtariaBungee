@@ -42,7 +42,7 @@ public class AutoMessageTask implements Runnable {
 		message = Utils.formatMessageColors(message);
 
 		// Et on l'envoi à tout le monde ! :P
-		BungeeCord.getInstance().broadcast(new TextComponent(Config.prefix + message));
+		BungeeCord.getInstance().broadcast(TextComponent.fromLegacyText(Config.prefix + message));
 	}
 
 }

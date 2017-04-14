@@ -1,9 +1,11 @@
 package fr.utaria.utariabungee.managers;
 
+import fr.utaria.utariabungee.Config;
 import fr.utaria.utariabungee.UtariaBungee;
 import fr.utaria.utariabungee.tasks.AntiBotProtectionTask;
 import fr.utaria.utariabungee.utils.Utils;
 import net.md_5.bungee.BungeeCord;
+import net.md_5.bungee.Util;
 
 import java.io.IOException;
 import java.net.URL;
@@ -38,6 +40,12 @@ public class AntiBotManager {
 
 
 	public boolean ipIsBot(String ip) {
+		// Si la protection est désactivée, one ne fait rien.
+		if (!this.isProtectionEnabled()) {
+			UtariaBungee.getInstance().getLogger().warning("La protection anti-bot est désactivée !");
+			return false;
+		}
+
 		if (!this.strIsIp(ip))             return false;
 		if (this.ipBlackList.contains(ip)) return true;
 
@@ -63,6 +71,9 @@ public class AntiBotManager {
 
 	/*     Seconde protection, activation si il y a beaucoup de connexion    */
 	public boolean passSecondProtection(boolean onlineMode) {
+		// Si la protection est désactivée, one ne fait rien.
+		if (!this.isProtectionEnabled()) return true;
+
 		// Nouvelle connexion tout de suite (en appelant la méthode)
 		this.lastAuthTimes.add(System.currentTimeMillis());
 
@@ -107,6 +118,10 @@ public class AntiBotManager {
 		}
 
 		return false;
+	}
+	private boolean isProtectionEnabled() {
+		String configVal = Utils.getConfigValue("antibot_protection_enabled");
+		return configVal != null && configVal.equals("true");
 	}
 	private boolean strIsIp(String str) {
 		return str.matches("\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}");

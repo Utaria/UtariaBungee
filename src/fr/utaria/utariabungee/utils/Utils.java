@@ -1,5 +1,6 @@
 package fr.utaria.utariabungee.utils;
 
+import fr.utaria.utariabungee.Config;
 import fr.utaria.utariabungee.UtariaBungee;
 import fr.utaria.utariabungee.database.Database;
 import fr.utaria.utariabungee.database.DatabaseSet;
@@ -16,10 +17,23 @@ import java.lang.reflect.Field;
 import java.net.*;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
 
 public class Utils {
+
+    private static List<ConfigRequest> lastConfigReq;
+
+
+    private Utils() {}
+
+    static {
+        lastConfigReq = new ArrayList<>();
+    }
+
+
 
 	public static String dateToString(Timestamp date) {
 		return new SimpleDateFormat("dd/MM/yyyy à HH:mm:ss").format(date);
@@ -128,15 +142,23 @@ public class Utils {
 
 
     public static String getConfigValue(String key){
-        Database db = UtariaBungee.getDatabase();
+    	// On supprime les requêtes expirées ...
+		lastConfigReq.removeIf((request) -> System.currentTimeMillis() > request.getTime() + Config.CONFIG_CACHE_EXPIRATION * 1000);
 
-        List<DatabaseSet> sets = db.find("config", DatabaseSet.makeConditions(
-                "key", key
-        ));
+    	// ... puis on regarde si la valeur n'est pas déjà en cache ...
+		for (ConfigRequest lastReq : lastConfigReq)
+			if (lastReq.getKey().equals(key))
+				return lastReq.getValue();
 
-        if(sets.size() == 0) return null;
-        else return sets.get(0).getString("value");
-    }
+		// ... sinon on va la chercher dans la BDD et on la met en cache.
+        Database          db   = UtariaBungee.getDatabase();
+        List<DatabaseSet> sets = db.find("config", DatabaseSet.makeConditions("key", key));
+
+        String value = (sets.size() == 0) ? null : sets.get(0).getString("value");
+
+		if (value != null) lastConfigReq.add(new ConfigRequest(key, value));
+		return value;
+	}
     public static void updateConfigValue(String key, String value){
         Database db = UtariaBungee.getDatabase();
 
@@ -158,4 +180,24 @@ public class Utils {
 
         return false;
     }
+
+
+    private static class ConfigRequest {
+    	private String key;
+    	private String value;
+    	private long   time;
+
+    	public ConfigRequest(String key, String value) {
+			this.key   = key;
+			this.value = value;
+			this.time  = System.currentTimeMillis();
+		}
+
+		public String getKey  () { return this.key;   }
+		public String getValue() { return this.value; }
+		public long   getTime () { return this.time;  }
+
+		public String toString() { return "{ConfigRequest #" + this.hashCode() + " (key=" + key + " value=" + value + " time=" + time + ")}"; }
+	}
+
 }
