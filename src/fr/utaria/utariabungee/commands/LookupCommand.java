@@ -52,7 +52,7 @@ public class LookupCommand extends Command{
 		BungeeCord.getInstance().getScheduler().runAsync(UtariaBungee.getInstance(), () -> {
 			if (!Utils.stringIsIP(args[0])) {
 
-				if (args.length >= 2 && fHta) {
+				if (args.length >= 2) {
 					printPlayerSanction(sender, args[0], args[1]);
 					return;
 				}
