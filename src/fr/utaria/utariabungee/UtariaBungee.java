@@ -10,6 +10,7 @@ import fr.utaria.utariabungee.players.UtariaPlayer;
 import fr.utaria.utariabungee.socket.SocketServer;
 import fr.utaria.utariabungee.socket.custompackets.PacketInRestart;
 import fr.utaria.utariabungee.tasks.AutoMessageTask;
+import fr.utaria.utariabungee.tasks.TabHeadersTask;
 import fr.utaria.utariabungee.utils.Utils;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Plugin;
@@ -67,6 +68,7 @@ public class UtariaBungee extends Plugin{
 
 		PlayersManager.reloadRanks();
 		new AutoMessageTask();
+		new TabHeadersTask();
 
 
 		// Démarrage du serveur de socket

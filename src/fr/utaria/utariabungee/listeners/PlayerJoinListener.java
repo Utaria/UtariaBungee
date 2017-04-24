@@ -121,13 +121,6 @@ public class PlayerJoinListener implements Listener{
 			if (PlayersManager.playerHasRankLevel(pp, 10))
 				UtariaBungee.getStaffChannel().addPlayer(pp);
 		});
-
-
-		// On défini les titres dans la TABLIST
-        pp.setTabHeader(
-        		new TextComponent("§b§lUTARIA §f§l- §e§lLes serveurs de demain !"),
-				new TextComponent("§aSite: §6utaria.fr   §aTS: §9ts.utaria.fr")
-		);
 	}
 
 
