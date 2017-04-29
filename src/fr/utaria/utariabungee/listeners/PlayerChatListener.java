@@ -1,11 +1,13 @@
 package fr.utaria.utariabungee.listeners;
 
-import fr.utaria.utariabungee.database.DatabaseSet;
+import com.google.common.base.Charsets;
+import com.google.common.hash.Hashing;
 import fr.utaria.utariabungee.Config;
 import fr.utaria.utariabungee.UtariaBungee;
+import fr.utaria.utariabungee.database.DatabaseSet;
+import fr.utaria.utariabungee.players.PlayerInfo;
 import fr.utaria.utariabungee.utils.TimeParser;
 import fr.utaria.utariabungee.utils.Utils;
-
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.ChatEvent;
@@ -55,6 +57,22 @@ public class PlayerChatListener implements Listener {
 			e.setCancelled(true);
 			player.sendMessage(new TextComponent(Config.prefix + "§7Vous avez été muté le §6" + Utils.dateToString(infos.getTimestamp("date")) + "§7 par §6" + infos.getString("muted_by") + "§7 pour §e" + infos.getString("reason") + "§7. Il vous reste §e" +
 				TimeParser.timeToString(infos.getTimestamp("mute_end")) + "§7 de mute."));
+		}
+
+
+		/*---------------------------------------------------*/
+		/*  Protection de diffusion du mot de passe          */
+		/*---------------------------------------------------*/
+		String message = e.getMessage();
+
+		// On regarde si le message ne contient qu'un seul mot (le mdp?)
+		if (!message.trim().contains(" ")) {
+			String cryptedMessage = Hashing.sha1().hashString(message.trim(), Charsets.UTF_8).toString();
+
+			if (cryptedMessage.equalsIgnoreCase(PlayerInfo.get(player).getCryptedPassword())) {
+				e.setCancelled(true);
+				player.sendMessage(TextComponent.fromLegacyText(Config.warningPrefix + "Faites attention à ne pas envoyer votre mot de passe."));
+			}
 		}
 	}
 	

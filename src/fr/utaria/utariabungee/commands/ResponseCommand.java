@@ -24,36 +24,55 @@ public class ResponseCommand extends Command {
 			return;
 		}
 
+		/*--------------------------------*/
+		/*  Joueur et permission          */
+		/*--------------------------------*/
 		ProxiedPlayer pp = (ProxiedPlayer) sender;
 
-		if( args.length < 1 ) {
+		if (UtariaBungee.getModerationManager().playerIsTempMuted(pp)) {
+			pp.sendMessage(TextComponent.fromLegacyText(Config.prefix + "§cVous ne pouvez pas envoyer de message privé en étant muté."));
+			return;
+		}
+
+		/*--------------------------------*/
+		/*  Récupération des arguments    */
+		/*--------------------------------*/
+		if (args.length < 1) {
 			pp.sendMessage(new TextComponent(Config.prefix + "§cUtilisation: /r <message>"));
 			return;
 		}
 
+		/*--------------------------------*/
+		/*  Récupération du destinataire  */
+		/*--------------------------------*/
 		UUID  playerUID = UtariaBungee.getPMManager().getLastSenderFor(pp);
-		String message  = "";
 
-		for (String arg : args) message += "§7" + arg + " ";
-
-		if( playerUID == null ) {
-			pp.sendMessage(new TextComponent(Config.prefix + "§cVous ne pouvez répondre à personne."));
+		// Tests avant la récupération du destinataire
+		if (playerUID == null) {
+			pp.sendMessage(new TextComponent(Config.prefix + "§cAttendez qu'un joueur vous écrive avant."));
 			return;
-		}
-
-		if( playerUID.equals(pp.getUniqueId()) ) {
+		} else if (playerUID.equals(pp.getUniqueId())) {
 			pp.sendMessage(new TextComponent(Config.prefix + "§cAction impossible."));
 			return;
 		}
 
-		if( BungeeCord.getInstance().getPlayer(playerUID) == null ) {
+		// On tente ensuite de récupérer le destinataire (mais il doit être connecté).
+		ProxiedPlayer ppDest = BungeeCord.getInstance().getPlayer(playerUID);
+		if (ppDest == null) {
 			pp.sendMessage(new TextComponent(Config.prefix + "§cLe joueur qui vous envoyé un message est hors-ligne."));
 			return;
 		}
 
-		ProxiedPlayer ppDest = BungeeCord.getInstance().getPlayer(playerUID);
+		/*--------------------------------*/
+		/*  Construction du message       */
+		/*--------------------------------*/
+		StringBuilder message = new StringBuilder();
 
-		UtariaBungee.getPMManager().sendPrivateMessageTo(pp, ppDest, message);
+		for (String arg : args)
+			message.append(arg).append(" ");
+
+
+		UtariaBungee.getPMManager().sendPrivateMessageTo(pp, ppDest, message.toString());
 	}
 
 }

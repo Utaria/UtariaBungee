@@ -22,14 +22,14 @@ public class SpyCommand extends Command {
 		if(!(sender instanceof ProxiedPlayer)) return;
 		ProxiedPlayer pp = (ProxiedPlayer) sender;
 
-		// On vérifie si il a les permissions de faire ça
-		if (!PlayersManager.playerHasRankLevel(pp, Config.adminMinLevel)) {
+		// On vérifie si le joueur a la permission de faire ça
+		if (!PlayersManager.playerHasRankLevel(pp, Config.modoPlusLevel)) {
 			BungeeMessages.cannotUseCommand(sender);
 			return;
 		}
 
 		// On active/désactive le mode SPY pour le joueur
-		if ( UtariaBungee.getPMManager().togglePlayerSpyMode(pp))
+		if (UtariaBungee.getPMManager().togglePlayerSpyMode(pp))
 			pp.sendMessage(new TextComponent(Config.prefix + "§aLe mode §2SPY §aest maintenant activé."));
 		else
 			pp.sendMessage(new TextComponent(Config.prefix + "§cLe mode §6SPY §cest maintenant désactivé."));

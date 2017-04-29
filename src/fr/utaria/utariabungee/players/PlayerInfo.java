@@ -19,6 +19,7 @@ public class PlayerInfo {
 
 	private int    id;
 	private double coins;
+	private String password;
 
 
 	public PlayerInfo(UtariaPlayer utariaPlayer) {
@@ -32,8 +33,9 @@ public class PlayerInfo {
 	}
 
 
-	public int    getId   () { return this.id;    }
-	public double getCoins() { return this.coins; }
+	public int    getId             () { return this.id;       }
+	public double getCoins          () { return this.coins;    }
+	public String getCryptedPassword() { return this.password; }
 
 
 	public List<UtariaRank> getRanks           () {
@@ -72,8 +74,9 @@ public class PlayerInfo {
 		);
 
 		if (set != null) {
-			this.id    = set.getInteger("id");
-			this.coins = set.getDouble("coins");
+			this.id       = set.getInteger("id");
+			this.coins    = set.getDouble("coins");
+			this.password = set.getString("password");
 
 			// On récupère les différent grades du joueur ...
 			List<DatabaseSet> ranksSets = UtariaBungee.getDatabase().find(

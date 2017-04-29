@@ -6,8 +6,10 @@ public class Config {
 
 	public static int     socketServerPort   = 15000;
 	public static String  prefix             = "§8[§bUtaria§8] §7";
+	public static String  warningPrefix      = "§c(§4§l!§c) ";
 
     public static int moderationMinLevel = 31;
+	public static int modoPlusLevel      = 30;
     public static int adminMinLevel      = 40;
 
 	/* [0, 10] = classical members */

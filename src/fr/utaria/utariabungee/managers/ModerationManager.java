@@ -1,11 +1,13 @@
 package fr.utaria.utariabungee.managers;
 
-import java.sql.Timestamp;
-import java.util.List;
-
 import fr.utaria.utariabungee.UtariaBungee;
 import fr.utaria.utariabungee.database.Database;
 import fr.utaria.utariabungee.database.DatabaseSet;
+import fr.utaria.utariabungee.utils.Utils;
+import net.md_5.bungee.api.connection.ProxiedPlayer;
+
+import java.sql.Timestamp;
+import java.util.List;
 
 public class ModerationManager {
 
@@ -183,6 +185,11 @@ public class ModerationManager {
 		}
 
 		return false;
+	}
+
+
+	public boolean playerIsTempMuted(ProxiedPlayer player) {
+		return this.playernameIsTempMuted(player.getName()) || this.ipIsTempMuted(Utils.getPlayerIP(player));
 	}
 
 }
