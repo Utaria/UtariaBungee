@@ -8,8 +8,8 @@ public class Config {
 	public static String  prefix             = "§8[§bUtaria§8] §7";
 	public static String  warningPrefix      = "§c(§4§l!§c) ";
 
-    public static int moderationMinLevel = 31;
-	public static int modoPlusLevel      = 30;
+    public static int moderationMinLevel = 30;
+	public static int modoLevel          = 29;
     public static int adminMinLevel      = 40;
 
 	/* [0, 10] = classical members */
@@ -31,8 +31,8 @@ public class Config {
     public static String autoRestartMessage = ChatColor.RED + "Utaria revient, le serveur est en cours de redémarrage.";
 
 
-    public static String maxModoMuteTime    = "2h";
-    public static String maxModoPlusBanTime = "7j";
+    public static String maxModoMuteTime = "12h";
+    public static String maxModoBanTime  = "7j";
 
 
 

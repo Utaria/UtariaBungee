@@ -47,8 +47,9 @@ public class TabHeadersTask implements Runnable {
 
 
 	private void prepare() {
-		String blank   = "      ";
-		String secLine = "\n§7mc.utaria.fr\n ";
+		String blank    = "      ";
+		String secLine  = "\n§7mc.utaria.fr\n ";
+		String secLine2 = "\n§7ts.utaria.fr\n ";
 		
 		this.headerSteps = new String[] {
 				"§l" + blank + "UTARIA" + blank + secLine,
@@ -72,7 +73,30 @@ public class TabHeadersTask implements Runnable {
 				"§l" + blank + "UTARIA" + blank + secLine,
 				"§l" + blank + "UTARIA" + blank + secLine,
 				"§l" + blank + "§e§lUTARIA" + blank + secLine,
-				"§l" + blank + "§e§lUTARIA" + blank + secLine
+				"§l" + blank + "§e§lUTARIA" + blank + secLine,
+
+				"§l" + blank + "UTARIA" + blank + secLine2,
+				"§l" + blank + "UTARIA" + blank + secLine2,
+				"§l" + blank + "UTARIA" + blank + secLine2,
+				"§l" + blank + "UTARIA" + blank + secLine2,
+				"§l" + blank + "UTARIA" + blank + secLine2,
+				"§l" + blank + "UTARIA" + blank + secLine2,
+				"§l" + blank + "UTARIA" + blank + secLine2,
+				"§l" + blank + "UTARIA" + blank + secLine2,
+				"§l" + blank + "UTARIA" + blank + secLine2,
+				"§l" + blank + "§6§lU§f§lTARIA" + blank + secLine2,
+				"§l" + blank + "§e§lU§6§lT§f§lARIA" + blank + secLine2,
+				"§l" + blank + "§e§lUT§6§lA§f§lRIA" + blank + secLine2,
+				"§l" + blank + "§e§lUTA§6§lR§f§lIA" + blank + secLine2,
+				"§l" + blank + "§e§lUTAR§6§lI§f§lA" + blank + secLine2,
+				"§l" + blank + "§e§lUTARI§6§lA" + blank + secLine2,
+				"§l" + blank + "§e§lUTARIA" + blank + secLine2,
+				"§l" + blank + "§e§lUTARIA" + blank + secLine2,
+				"§l" + blank + "§e§lUTARIA" + blank + secLine2,
+				"§l" + blank + "UTARIA" + blank + secLine2,
+				"§l" + blank + "UTARIA" + blank + secLine2,
+				"§l" + blank + "§e§lUTARIA" + blank + secLine2,
+				"§l" + blank + "§e§lUTARIA" + blank + secLine2
 		};
 	}
 

@@ -31,7 +31,7 @@ public class TempMuteCommand extends Command{
 		// Il faut avoir les droits pour pouvoir faire ça !
 		if(sender instanceof ProxiedPlayer){
 			ProxiedPlayer pp = (ProxiedPlayer) sender;
-			if (!PlayersManager.playerHasRankLevel(pp, 29)) {
+			if (!PlayersManager.playerHasRankLevel(pp, 5)) {
 				BungeeMessages.cannotUseCommand(sender);
 				return;
 			}
@@ -58,9 +58,21 @@ public class TempMuteCommand extends Command{
 			return;
 		}
 
+		// On limite tous les helpeurs à 5m de mute
+		if (time.biggerThan("5m") && sender instanceof ProxiedPlayer && !PlayersManager.playerHasRankLevel((ProxiedPlayer) sender, 6)) {
+			sender.sendMessage(new TextComponent(Config.prefix + "§cVous ne pouvez pas mute plus de §65 minutes§c."));
+			return;
+		}
+
 		// On limite les modos normaux à 2h de mute
-		if (time.biggerThan(Config.maxModoMuteTime) && sender instanceof ProxiedPlayer && !PlayersManager.playerHasRankLevel((ProxiedPlayer) sender, 30)) {
+		if (time.biggerThan(Config.maxModoMuteTime) && sender instanceof ProxiedPlayer && !PlayersManager.playerHasRankLevel((ProxiedPlayer) sender, Config.modoLevel + 1)) {
 			sender.sendMessage(new TextComponent(Config.prefix + "§cVous ne pouvez pas mute plus de §6" + Config.maxModoMuteTime + "§c."));
+			return;
+		}
+
+		// On limite tous les joueurs à 2j de mute
+		if (time.biggerThan("2j") && sender instanceof ProxiedPlayer) {
+			sender.sendMessage(new TextComponent(Config.prefix + "§cVous ne pouvez pas mute plus de §62 jours§c."));
 			return;
 		}
 

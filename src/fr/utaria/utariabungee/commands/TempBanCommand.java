@@ -32,7 +32,7 @@ public class TempBanCommand extends Command{
 		// Il faut avoir les droits pour pouvoir faire ça !
 		if (sender instanceof ProxiedPlayer) {
 			ProxiedPlayer pp = (ProxiedPlayer) sender;
-			if (!PlayersManager.playerHasRankLevel(pp, 30)) {
+			if (!PlayersManager.playerHasRankLevel(pp, 29)) {
 				BungeeMessages.cannotUseCommand(sender);
 				return;
 			}
@@ -60,8 +60,8 @@ public class TempBanCommand extends Command{
 		}
 
 		// On limite les modo+ à 7j de ban
-		if (time.biggerThan(Config.maxModoPlusBanTime) && sender instanceof ProxiedPlayer && !PlayersManager.playerHasRankLevel((ProxiedPlayer) sender, Config.adminMinLevel)) {
-			sender.sendMessage(new TextComponent(Config.prefix + "§cVous ne pouvez pas ban plus de §6" + Config.maxModoPlusBanTime + "§c."));
+		if (time.biggerThan(Config.maxModoBanTime) && sender instanceof ProxiedPlayer && !PlayersManager.playerHasRankLevel((ProxiedPlayer) sender, Config.modoLevel + 1)) {
+			sender.sendMessage(new TextComponent(Config.prefix + "§cVous ne pouvez pas ban plus de §6" + Config.maxModoBanTime + "§c."));
 			return;
 		}
 		

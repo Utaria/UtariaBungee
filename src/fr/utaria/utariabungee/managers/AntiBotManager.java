@@ -1,11 +1,9 @@
 package fr.utaria.utariabungee.managers;
 
-import fr.utaria.utariabungee.Config;
 import fr.utaria.utariabungee.UtariaBungee;
 import fr.utaria.utariabungee.tasks.AntiBotProtectionTask;
 import fr.utaria.utariabungee.utils.Utils;
 import net.md_5.bungee.BungeeCord;
-import net.md_5.bungee.Util;
 
 import java.io.IOException;
 import java.net.URL;
@@ -96,18 +94,22 @@ public class AntiBotManager {
 			Scanner sc = null;
 
 			try {
-				String res = "";
+				StringBuilder res = new StringBuilder();
 				// On récupère les infos sur l'IP depuis le site
 				sc = new Scanner(new URL(site + ip).openStream());
 
 				// On monte la chaîne de caractères résultat dans laquelle sera stockée tout le contenu de la page
 				while (sc.hasNextLine())
-					res += sc.nextLine();
+					res.append(sc.nextLine());
+
+				// Si le site ne fonctionne pas, on ne le prends pas en compte.
+				if (res.toString().matches("error"))
+					continue;
 
 				// On regarde ensuite si le mot de succès est présent dans le retrour de la page
 				String[] args = this.BLACKLIST_SITES.get(site).split(",");
 				for (String arg : args)
-					if (res.matches(arg) || res.contains(arg))
+					if (res.toString().matches(arg) || res.toString().contains(arg))
 						return true;
 
 			} catch (IOException e) {

@@ -5,6 +5,7 @@ import fr.utaria.utariabungee.UtariaBungee;
 import fr.utaria.utariabungee.database.DatabaseSet;
 import fr.utaria.utariabungee.utils.Utils;
 import net.md_5.bungee.BungeeCord;
+import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
 
 import java.util.concurrent.TimeUnit;

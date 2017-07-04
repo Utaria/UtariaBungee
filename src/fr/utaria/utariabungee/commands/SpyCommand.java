@@ -23,7 +23,7 @@ public class SpyCommand extends Command {
 		ProxiedPlayer pp = (ProxiedPlayer) sender;
 
 		// On vérifie si le joueur a la permission de faire ça
-		if (!PlayersManager.playerHasRankLevel(pp, Config.modoPlusLevel)) {
+		if (!PlayersManager.playerHasRankLevel(pp, Config.adminMinLevel)) {
 			BungeeMessages.cannotUseCommand(sender);
 			return;
 		}

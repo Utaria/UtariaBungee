@@ -8,6 +8,7 @@ import java.util.regex.Pattern;
 import fr.utaria.utariabungee.Config;
 import fr.utaria.utariabungee.database.Database;
 import fr.utaria.utariabungee.managers.PlayersManager;
+import fr.utaria.utariabungee.utils.Utils;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -27,94 +28,91 @@ public class BanCommand extends Command{
 	
 	@Override
 	public void execute(CommandSender sender, String[] args) {
-		
 		if (sender instanceof ProxiedPlayer) {
 			ProxiedPlayer pp = (ProxiedPlayer) sender;
+
 			if (!PlayersManager.playerHasRankLevel(pp, Config.moderationMinLevel)) {
 				BungeeMessages.cannotUseCommand(sender);
 				return;
 			}
 		}
 		
-		if(args.length < 2){
+		if (args.length < 2) {
 			sender.sendMessage(new TextComponent(Config.prefix + "Utilisation de la commande : §6/ban <joueur|ip> <raison>"));
 			return;
 		}
 		
-		String reason = "";
-		
-		final String bannedBy = (sender instanceof ProxiedPlayer) ? ((ProxiedPlayer) sender).getDisplayName() : "CONSOLE";
-		
+		StringBuilder reason = new StringBuilder();
+
+		String  bannedBy  = (sender instanceof ProxiedPlayer) ? ((ProxiedPlayer) sender).getDisplayName() : "CONSOLE";
 		Pattern patternIP = Pattern.compile("^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?).(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?).(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?).(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$");
 		Matcher matchIP   = patternIP.matcher(args[0]);
-		boolean isIP = matchIP.find();
+		boolean isIP      = matchIP.find();
+
 		
-		// Parse reason
+		// On récupère la raison écrite par le joueur
 		for(int i = 1; i < args.length; i++)
-			reason += "§6" + args[i] + " ";
-		reason = reason.substring(0, reason.length()-1);
-		
-		if(!isIP){
+			reason.append("§6").append(args[i]).append(" ");
+
+		reason = new StringBuilder(reason.substring(0, reason.length() - 1));
+
+
+		if (!isIP) {
+			String playername = args[0];
 			
-			final String playername = args[0];
-			
-			// Check if the playername is already banned
-			if(UtariaBungee.getModerationManager().playernameIsBanned(playername)){
+			// On regarde si le joueur n'a pas déjà été banni
+			if (UtariaBungee.getModerationManager().playernameIsBanned(playername)) {
 				sender.sendMessage(new TextComponent(Config.prefix + "§cLe joueur §6" + playername + "§c est déjà banni. Pour plus d'infos, tapez §9/lookup " + playername + "§c."));
 				return;
 			}
 			
-			// Ban player with this playername
+			// On ban le joueur avec le pseudo en question
 			ProxiedPlayer player = UtariaBungee.getInstance().getProxy().getPlayer(playername);
-			if(player != null) player.disconnect(new TextComponent("Vous avez été banni par " + bannedBy + " pour la raison : '" + reason + "'."));
-			
-			final String server   = (player != null) ? player.getServer().getInfo().getName() : "none";
-			
-			// Save the request into the database
-			final String reasonScheduled = reason;
-			UtariaBungee.getInstance().getProxy().getScheduler().runAsync(UtariaBungee.getInstance(), new Runnable() {@Override public void run() {
-				UtariaBungee.getDatabase().save("bungee_bans", DatabaseSet.makeFields(
-					"player", playername,
-					"reason", reasonScheduled,
-					"server", server,
-					"banned_by", bannedBy,
-					"date", new Timestamp(new Date().getTime())
-				));
-			}});
-			
-		}else{
-			
+			if (player != null)
+				player.disconnect(new TextComponent("Vous avez été banni par " + bannedBy + " pour la raison : '" + reason + "'."));
+
+
+			// On sauvegarde le ban dans la base de données
+			String server          = (player != null) ? player.getServer().getInfo().getName() : "none";
+			String reasonScheduled = reason.toString();
+
+			UtariaBungee.getInstance().getProxy().getScheduler().runAsync(UtariaBungee.getInstance(), () ->
+					UtariaBungee.getDatabase().save("bungee_bans", DatabaseSet.makeFields(
+						"player", playername,
+						"reason", reasonScheduled,
+						"server", server,
+						"banned_by", bannedBy,
+						"date", new Timestamp(new Date().getTime())
+					))
+			);
+		} else {
 			final String ip = args[0];
-			
-			// Check if the ip is already banned
-			if(UtariaBungee.getModerationManager().ipIsBanned(ip)){
+
+			// On regarde si l'IP a pas déjà été bannie
+			if (UtariaBungee.getModerationManager().ipIsBanned(ip)) {
 				sender.sendMessage(new TextComponent(Config.prefix + "§cL'IP §6" + ip + "§c est déjà bannie. Pour plus d'infos, tapez §9/lookup " + ip + "§c."));
 				return;
 			}
-						
-			// Ban all players with this ip
-			for(ProxiedPlayer player : UtariaBungee.getInstance().getProxy().getPlayers()){
-				if(player != null && player.getAddress().getHostName().equalsIgnoreCase(ip)){
+
+			// On ban tous les joueurs avec cette IP là
+			for (ProxiedPlayer player : UtariaBungee.getInstance().getProxy().getPlayers())
+				if (player != null && player.getAddress().getHostName().equalsIgnoreCase(ip))
 					player.disconnect(new TextComponent("Vous avez été banni par " + bannedBy + " pour la raison : '" + reason + "'."));
-				}
-			}
-						
-			// Save the request into the database
-			final String reasonScheduled = reason;
-			UtariaBungee.getInstance().getProxy().getScheduler().runAsync(UtariaBungee.getInstance(), new Runnable() {@Override public void run() {
-				UtariaBungee.getDatabase().save("bungee_bans", DatabaseSet.makeFields(
-					"ip", ip,
-					"reason", reasonScheduled,
-					"banned_by", bannedBy,
-					"date", new Timestamp(new Date().getTime())
-				));
-			}});
-			
+
+
+			// On sauvegarde le ban dans la base de données
+			final String reasonScheduled = reason.toString();
+			UtariaBungee.getInstance().getProxy().getScheduler().runAsync(UtariaBungee.getInstance(), () ->
+					UtariaBungee.getDatabase().save("bungee_bans", DatabaseSet.makeFields(
+							"ip", ip,
+							"reason", reasonScheduled,
+							"banned_by", bannedBy,
+							"date", new Timestamp(new Date().getTime())
+					))
+			);
 		}
 		
 		
-		
-		
-		UtariaBungee.getInstance().getProxy().broadcast(new TextComponent(Config.prefix + "§e" + args[0] + "§7 a été banni pour §6" + reason + "§7."));
+		UtariaBungee.getInstance().getProxy().broadcast(new TextComponent(Config.prefix + "§e" + ((isIP) ? Utils.hideIP(args[0]) : args[0]) + "§7 a été banni pour §6" + reason + "§7."));
 	}
 }

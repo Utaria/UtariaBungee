@@ -32,7 +32,7 @@ public class LookupCommand extends Command{
 
 		if(sender instanceof ProxiedPlayer){
 			ProxiedPlayer pp = (ProxiedPlayer) sender;
-			if (!PlayersManager.playerHasRankLevel(pp, 29)) {
+			if (!PlayersManager.playerHasRankLevel(pp, Config.modoLevel)) {
 				BungeeMessages.cannotUseCommand(sender);
 				return;
 			} else if (PlayersManager.playerHasRankLevel(pp, Config.adminMinLevel))
