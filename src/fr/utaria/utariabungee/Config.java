@@ -29,6 +29,7 @@ public class Config {
 
     public static String autoRestartTime    = "5h30";
     public static String autoRestartMessage = ChatColor.RED + "Utaria revient, le serveur est en cours de redémarrage.";
+    public static int    autoMessageDelay   = 4; // En minute
 
 
     public static String maxModoMuteTime = "12h";

@@ -7,7 +7,8 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 public class PlayerUtils {
 
-    private final static int CENTER_PX = 154;
+    public final static int TCHATBOX_WIDTH = 154;
+
 
     public static void sendCenteredMessage(ProxiedPlayer player, String message) {
         if(message == null || message.equals("")) {
@@ -39,7 +40,7 @@ public class PlayerUtils {
         }
 
         int halvedMessageSize = messagePxSize / 2;
-        int toCompensate = CENTER_PX - halvedMessageSize;
+        int toCompensate = TCHATBOX_WIDTH - halvedMessageSize;
         int spaceLength = FontInfo.SPACE.getLength() + 1;
         int compensated = 0;
         StringBuilder sb = new StringBuilder();

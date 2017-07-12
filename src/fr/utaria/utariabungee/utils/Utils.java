@@ -18,7 +18,6 @@ import java.net.*;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -62,18 +61,20 @@ public class Utils {
         String words[] = message.split(" ");
         String color   = null;
 
-        message = "";
+		StringBuilder messageBuilder = new StringBuilder();
 
-        for (String word : words) {
+		for (String word : words) {
             if (word.substring(0, 1).equals("&"))
                 color = word.substring(1, 2);
             else if (color != null)
                 word = '&' + color + word;
 
-            message += word + " ";
+            messageBuilder.append(word).append(" ");
         }
 
-        message = ChatColor.translateAlternateColorCodes('&', message.substring(0, message.length() - 1));
+		message = messageBuilder.toString();
+		message = ChatColor.translateAlternateColorCodes('&', message.substring(0, message.length() - 1));
+
         return message;
     }
 
