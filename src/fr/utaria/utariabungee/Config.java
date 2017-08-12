@@ -16,7 +16,7 @@ public class Config {
 
 
     public static boolean maintenance              = false;
-    public static String  maintenance_message      = "§cMaintenance en cours ! De retour très vite !\n§6Pour plus d'infos : §e@Utaria_FR";
+    public static String  maintenance_message      = "§cMaintenance en cours ! De retour en septembre !\n§6Pour plus d'infos : §e@Utaria_FR";
     public static String  maintenance_motd         = "§c- Maintenance en cours -";
     public static String  maintenance_status       = "§cMaintenance en cours.";
     public static int     maintenance_logout_delay = 30;
