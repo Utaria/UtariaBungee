@@ -27,24 +27,21 @@ public class PMManager extends AbstractManager {
 
 
 	public void sendPrivateMessageTo(ProxiedPlayer sender, ProxiedPlayer receiver, String message) {
-		// On génère le texte du message
-		BaseComponent[] text = TextComponent.fromLegacyText("§b" + sender.getName() + "§8 > §a" + receiver.getName() + "§7 : " + message);
-
-		// On envoie le message à l'éxpéditeur et au destinataire
-		sender.sendMessage(text);
-		receiver.sendMessage(text);
+		// On envoie le message à l'expéditeur et au destinataire
+		receiver.sendMessage(TextComponent.fromLegacyText("§d" + sender.getName() + "§7 à §bvous§7: " + message));
+		sender.sendMessage(TextComponent.fromLegacyText("§bVous§7 à §d" + receiver.getName() + "§7: " + message));
 
 		// On envoie le message aux joueurs en mode SPY
 		BaseComponent[] spyText = null;
 		if (this.playersSpying.size() > 0)
-			spyText = TextComponent.fromLegacyText("§8[Spy] §b" + sender.getName() + "§8 > §a" + receiver.getName() + "§7 : " + message);
+			spyText = TextComponent.fromLegacyText("§a§l+§d" + sender.getName() + "§8 à §d" + receiver.getName() + "§7: " + message);
 
 		for (ProxiedPlayer player : this.playersSpying)
 			if (player.isConnected() && player != sender && player != receiver)
 				player.sendMessage(spyText);
 
 		// On affiche le message dans la console pour avoir un retour sur les messages privés
-		BungeeCord.getInstance().getConsole().sendMessage(new TextComponent("[PM] " + sender.getName() + " > " + receiver.getName() + " : " + message));
+		BungeeCord.getInstance().getConsole().sendMessage(TextComponent.fromLegacyText("[PM] " + sender.getName() + " > " + receiver.getName() + " : " + message));
 
 		// On met en cache le dernier joueur auquel l'expéditeur a parlé
 		this.lastSenderFor.put(receiver.getUniqueId(), sender.getUniqueId());

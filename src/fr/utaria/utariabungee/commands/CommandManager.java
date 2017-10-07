@@ -2,6 +2,9 @@ package fr.utaria.utariabungee.commands;
 
 import fr.utaria.utariabungee.AbstractManager;
 import fr.utaria.utariabungee.UtariaBungee;
+import fr.utaria.utariabungee.commands.message.MessageCommand;
+import fr.utaria.utariabungee.commands.message.ResponseCommand;
+import fr.utaria.utariabungee.commands.message.SpyCommand;
 import fr.utaria.utariabungee.commands.moderation.*;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -22,6 +25,12 @@ public class CommandManager extends AbstractManager {
 
 	@Override
 	public void initialize() {
+		// Message
+		new MessageCommand();
+		new ResponseCommand();
+		new SpyCommand();
+
+		// Modération
 		new BanCommand();
 		new KickCommand();
 		new LookupCommand();

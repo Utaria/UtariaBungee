@@ -12,7 +12,6 @@ public class Config {
 	public final static String MOD_PREFIX     = "§8[§c§lMOD§8] §7";
 
 	public static int     socketServerPort   = 15000;
-	public static String  prefix             = "§8[§bUtaria§8] §7";
 
 	/*   Configuration du mode Maintenance   */
     public final static String  MAINTENANCE_STATUS       = "§cMaintenance en cours.";

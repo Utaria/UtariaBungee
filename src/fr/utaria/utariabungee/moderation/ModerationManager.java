@@ -148,7 +148,7 @@ public class ModerationManager extends AbstractManager {
 	void           removeCacheMuteOf(final ProxiedPlayer player) {
 		this.mutedPlayers.remove(player);
 	}
-	Mute.MuteState getMuteStateFor(final ProxiedPlayer player) {
+	public Mute.MuteState getMuteStateFor(final ProxiedPlayer player) {
 		if (!this.mutedPlayers.containsKey(player)) return Mute.MuteState.LOADING;
 		return (this.mutedPlayers.get(player) == null) ? Mute.MuteState.NO : Mute.MuteState.YES;
 	}

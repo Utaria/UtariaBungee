@@ -46,8 +46,8 @@ public class SpecialChannel {
 
 		// On notifie le joueur de son arrivée dans le canal
 		if (notifyPlayer) {
-			player.sendMessage(new TextComponent(Config.prefix + "§eVous pouvez parler dans le canal §b" + this.name + "§7."));
-			player.sendMessage(new TextComponent(Config.prefix + "§7Pour cela, utilisez §6" + this.prefix + "§7 devant vos messages."));
+			player.sendMessage(new TextComponent(Config.INFO_PREFIX + "§eVous pouvez parler dans le canal §b" + this.name + "§7."));
+			player.sendMessage(new TextComponent(Config.INFO_PREFIX + "§7Pour cela, utilisez §6" + this.prefix + "§7 devant vos messages."));
 		}
 	}
 	public void removePlayer(ProxiedPlayer player) {

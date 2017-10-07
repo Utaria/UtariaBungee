@@ -256,7 +256,7 @@ public class AutoRestartManager extends AbstractManager implements Runnable {
         if( timeToBroadcast <= 60 ) castEnd = timeToBroadcast        + " secondes";
         else                        castEnd = (timeToBroadcast / 60) + " minutes" ;
 
-        BungeeCord.getInstance().broadcast(new TextComponent(Config.prefix + UUtil.formatMessageColors("&cLe serveur va redémarrer automatiquement dans &6" + castEnd + "&c.")));
+        BungeeCord.getInstance().broadcast(TextComponent.fromLegacyText(Config.ERROR_PREFIX + "Le serveur va redémarrer automatiquement dans &6" + castEnd + "&c."));
 
     }
     private boolean _isBroadcastNeeded(int upTime) {
