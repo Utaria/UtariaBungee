@@ -4,27 +4,24 @@ import net.md_5.bungee.api.ChatColor;
 
 public class Config {
 
+	public static final boolean DEBUG_MODE = true;
+
+	public final static String ERROR_PREFIX   = "§8(§4§l✖§8) §c";
+	public final static String INFO_PREFIX    = "§8(§e§l✦§8) §7";
+	public final static String SUCCESS_PREFIX = "§7(§2§l✔§7) §a";
+	public final static String MOD_PREFIX     = "§8[§c§lM§8] §7";
+
 	public static int     socketServerPort   = 15000;
 	public static String  prefix             = "§8[§bUtaria§8] §7";
-	public static String  warningPrefix      = "§c(§4§l!§c) ";
 
-    public static int moderationMinLevel = 30;
-	public static int modoLevel          = 29;
-    public static int adminMinLevel      = 40;
-
-	/* [0, 10] = classical members */
+	/*   Configuration du mode Maintenance   */
+    public final static String  MAINTENANCE_STATUS       = "§cMaintenance en cours.";
+    public final static int     MAINTENANCE_LOGOUT_DELAY = 30;
+	public final static int     MAINTENANCE_MIN_LEVEL    = 10;
 
 
-    public static boolean maintenance              = false;
-    public static String  maintenance_message      = "§cMaintenance en cours ! De retour en septembre !\n§6Pour plus d'infos : §e@Utaria_FR";
-    public static String  maintenance_motd         = "§c- Maintenance en cours -";
-    public static String  maintenance_status       = "§cMaintenance en cours.";
-    public static int     maintenance_logout_delay = 30;
-	public static int     maintenanceMaxKickLevel  = 10;
-
-
-    public static int     maxPlayers    = 100;
-    public static String  motd          = "- motd -";
+    // public static int     maxPlayers    = 100;
+    // public static String  motd          = "- motd -";
     public static boolean manualServers = false;
 
     public static String autoRestartTime    = "5h30";

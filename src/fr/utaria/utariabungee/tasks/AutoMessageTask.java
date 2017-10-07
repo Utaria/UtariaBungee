@@ -2,18 +2,19 @@ package fr.utaria.utariabungee.tasks;
 
 import fr.utaria.utariabungee.Config;
 import fr.utaria.utariabungee.UtariaBungee;
-import fr.utaria.utariabungee.database.DatabaseSet;
-import fr.utaria.utariabungee.utils.PlayerUtils;
-import fr.utaria.utariabungee.utils.Utils;
+import fr.utaria.utariabungee.util.PlayerUtil;
+import fr.utaria.utariabungee.util.UUtil;
+import fr.utaria.utariadatabase.database.Database;
+import fr.utaria.utariadatabase.database.DatabaseManager;
+import fr.utaria.utariadatabase.result.DatabaseSet;
 import net.md_5.bungee.BungeeCord;
-import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 import java.util.concurrent.TimeUnit;
 
 public class AutoMessageTask implements Runnable {
 
-	private static final String TABLE_MESSAGES = "bungee_messages";
+	private static final String TABLE_MESSAGES = "automessages";
 	private static final int    LINE_WIDTH     = 70;
 
 	private int current;
@@ -28,22 +29,21 @@ public class AutoMessageTask implements Runnable {
 
 	@Override
 	public void run() {
+		Database db = DatabaseManager.getDB("global");
+
 		// On récupère le nombre de messages depuis la base de données
-		int messagesSize = UtariaBungee.getDatabase().find(TABLE_MESSAGES).size();
+		int messagesSize = db.select().from(TABLE_MESSAGES).findAll().size();
 
 		// On mets à jour l'indice en construisant le prochain indice
 		this.current = (this.current + 1) % messagesSize;
 
 		// On va chercher le message correspondant au nouvel indice
-		DatabaseSet set = UtariaBungee.getDatabase().findFirst(TABLE_MESSAGES, DatabaseSet.makeConditions(
-			"id", String.valueOf(this.current + 1)
-		));
-
+		DatabaseSet set = db.select().from(TABLE_MESSAGES).where("id = ?").attributes(String.valueOf(this.current + 1)).find();
 		if (set == null) return;
 
 		// On formate correctement le message automatique
 		String message = set.getString("message");
-		message = Utils.formatMessageColors(message);
+		message = UUtil.formatMessageColors(message);
 
 		// Et on l'envoi à tout le monde ! :P
 		// (on oublie pas de formater le messager avant)
@@ -70,10 +70,8 @@ public class AutoMessageTask implements Runnable {
 	}
 
 	private void broadcast(String message) {
-		BungeeCord.getInstance().getConsole().sendMessage(TextComponent.fromLegacyText(message));
-
 		for (ProxiedPlayer player : BungeeCord.getInstance().getPlayers())
-			PlayerUtils.sendCenteredMessage(player, message);
+			PlayerUtil.sendCenteredMessage(player, message);
 	}
 
 }

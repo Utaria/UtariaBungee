@@ -1,9 +1,8 @@
 package fr.utaria.utariabungee.players;
 
-import fr.utaria.utariabungee.UtariaBungee;
-import fr.utaria.utariabungee.database.DatabaseSet;
-import fr.utaria.utariabungee.managers.PlayersManager;
-import fr.utaria.utariabungee.utils.Utils;
+import fr.utaria.utariabungee.util.UUtil;
+import fr.utaria.utariadatabase.database.DatabaseAccessor;
+import fr.utaria.utariadatabase.result.DatabaseSet;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 import java.sql.Timestamp;
@@ -12,7 +11,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 
-public class PlayerInfo {
+public class PlayerInfo extends DatabaseAccessor {
 
 	private UtariaPlayer     uPlayer;
 	private List<UtariaRank> ranks;
@@ -22,7 +21,9 @@ public class PlayerInfo {
 	private String password;
 
 
-	public PlayerInfo(UtariaPlayer utariaPlayer) {
+	PlayerInfo(UtariaPlayer utariaPlayer) {
+		super("global");
+
 		this.uPlayer = utariaPlayer;
 		this.id      = -1;
 		this.coins   = 0;
@@ -67,39 +68,42 @@ public class PlayerInfo {
 
 
 	/*    Mise à jour des informations de puis la BDD    */
-	private void   reload() {
-		DatabaseSet set = UtariaBungee.getDatabase().findFirst(
-				PlayersManager.PLAYERS_TABLE,
-				DatabaseSet.makeConditions("playername", uPlayer.getPlayerName())
-		);
+	private void reload() {
+		DatabaseSet infoSet = this.getDB().select("id", "coins")
+				                          .from(PlayersManager.PLAYERS_TABLE).where("playername = ?")
+				                          .attributes(uPlayer.getPlayerName()).find();
 
-		if (set != null) {
-			this.id       = set.getInteger("id");
-			this.coins    = set.getDouble("coins");
-			this.password = set.getString("password");
+		if (infoSet != null) {
+			this.id       = infoSet.getInteger("id");
+			this.coins    = infoSet.getDouble("coins");
+			this.password = infoSet.getString("password");
 
 			// On récupère les différent grades du joueur ...
-			List<DatabaseSet> ranksSets = UtariaBungee.getDatabase().find(
-					PlayersManager.PLAYERS_RANKS_TABLE,
-					DatabaseSet.makeConditions("player_id", String.valueOf(this.id))
-			);
+			List<DatabaseSet> ranksSets = this.getDB().select().from(PlayersManager.PLAYERS_RANKS_TABLE)
+					                                  .where("player_id = ?").attributes(this.id).findAll();
 
 			// ... puis on les enregistre en mémoire.
-			for (DatabaseSet rankSet : ranksSets)
-				this.ranks.add(PlayersManager.getRankById(rankSet.getInteger("rank_id")));
+			for (DatabaseSet rankSet : ranksSets) {
+				int        rankId = rankSet.getInteger("rank_id");
+				UtariaRank rank   = PlayersManager.getRankById(rankId);
+
+				// Le grade doit exister pour pouvoir être appliqué.
+				if (rank != null) this.ranks.add(rank);
+			}
+
+			// On oublie pas de renseigner en base qu'il vient de se re-connecter !
+			this.getDB().update(PlayersManager.PLAYERS_TABLE).fields("last_ip", "last_connection")
+					    .values(UUtil.getPlayerIP(this.uPlayer.getPlayer()), new Timestamp(System.currentTimeMillis()))
+					    .where("id = ?").attributes(this.id)
+					    .execute();
 		} else
 			this.createPlayerProfile();
 	}
-	private void createPlayerProfile(){
-		Timestamp currentTimestamp = new java.sql.Timestamp(Calendar.getInstance().getTime().getTime());
+	private void createPlayerProfile() {
+		Timestamp now = new java.sql.Timestamp(Calendar.getInstance().getTime().getTime());
 
-		UtariaBungee.getDatabase().save("players", DatabaseSet.makeFields(
-				"playername", uPlayer.getPlayerName(),
-				"uuid", uPlayer.getPlayerUniqueId().toString(),
-				"first_connection", currentTimestamp,
-				"last_connection", currentTimestamp,
-				"first_ip", uPlayer.getIP()
-		), null, true);
+		this.getDB().update("players").fields("playername", "uuid", "first_connection", "last_connection", "first_ip")
+				    .values(uPlayer.getPlayerName(), uPlayer.getPlayerUniqueId().toString(), now, now, uPlayer.getIP()).execute();
 	}
 
 

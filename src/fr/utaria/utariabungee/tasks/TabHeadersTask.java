@@ -1,8 +1,8 @@
 package fr.utaria.utariabungee.tasks;
 
-import fr.utaria.utariabungee.Config;
 import fr.utaria.utariabungee.UtariaBungee;
-import fr.utaria.utariabungee.utils.Utils;
+import fr.utaria.utariabungee.network.ProxyManager;
+import fr.utaria.utariabungee.util.UUtil;
 import net.md_5.bungee.BungeeCord;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -14,15 +14,19 @@ import java.util.concurrent.TimeUnit;
 
 public class TabHeadersTask implements Runnable {
 
+	private ProxyManager proxy;
+
 	private String[] headerSteps;
 	private int      headerIndex;
 
 
 
 	public TabHeadersTask() {
-		BungeeCord.getInstance().getScheduler().schedule(UtariaBungee.getInstance(), this, 0, 250, TimeUnit.MILLISECONDS);
-
 		this.prepare();
+
+		this.proxy = UtariaBungee.getInstance().getInstance(ProxyManager.class);
+
+		BungeeCord.getInstance().getScheduler().schedule(UtariaBungee.getInstance(), this, 0, 250, TimeUnit.MILLISECONDS);
 	}
 
 	@Override
@@ -33,10 +37,10 @@ public class TabHeadersTask implements Runnable {
 			ServerInfo      info   = (pp.getServer() != null) ? pp.getServer().getInfo() : null;
 			String          server = "";
 
-			if (info != null && !info.getName().equalsIgnoreCase("default")) server = "(" + Utils.ucfirst(info.getName()) + ")";
+			if (info != null && !info.getName().equalsIgnoreCase("default")) server = "(" + UUtil.ucfirst(info.getName()) + ")";
 
 			BaseComponent[] footer = TextComponent.fromLegacyText(
-					" \n§b" + BungeeCord.getInstance().getOnlineCount() + "§7/" + Config.maxPlayers + " " + server + "\n "
+					" \n§b" + BungeeCord.getInstance().getOnlineCount() + "§7/" + this.proxy.getMaxPlayers() + " " + server + "\n "
 			);
 
 			pp.setTabHeader(header, footer);

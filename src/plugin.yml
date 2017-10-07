@@ -1,45 +1,6 @@
 name: UtariaBungee
 author: Utaria
-version: 1.0
+version: 2.0
 website: https://utaria.fr/
 main: fr.utaria.utariabungee.UtariaBungee
-commands:
-  ban:
-    description: "Permet de bannir un joueur"
-    usage: "Utilisation: /ban <joueur|ip> <raison>"
-  kick:
-    description: "Permet d'expulser un joueur"
-    usage: "Utilisation: /kick <joueur|ip> <raison>"
-  tempban:
-    description: "Permet de bannir temporairement un joueur"
-    usage: "Utilisation: /tempban <joueur|ip> <temps> <raison>"
-  tempmute:
-    description: "Permet de faire taire temporairement un joueur"
-    usage: "Utilisation: /mute <joueur|ip> <temps> <raison>"
-  unban:
-    description: "Permet de terminer le ban d'un joueur"
-    usage: "Utilisation: /unban <joueur|ip> <raison>"
-  unmute:
-    description: "Permet de terminer le mute d'un joueur"
-    usage: "Utilisation: /unmute <joueur|ip> <raison>"
-  lookup:
-    description: "Permet d'avoir des informations sur un(e) joueur|ip"
-    usage: "Utilisation: /lookup <joueur|ip>"
-  staff:
-    description: "Permet de connaître le staff actuellement en ligne"
-    usage: "Utilisation: /staff"
-  utaria:
-    description: "Permet de gérer la totalité de l'infrastructure Utaria"
-    usage: "Utilisation: /utaria <action> [arguments...]"
-  uptime:
-    description: "Permet de connaître depuis quand le serveur est allumé, et quand il redémarrera"
-    usage: "Utilisation: /uptime"
-  tpto:
-    description: "Permet de se téléporter à un serveur"
-    usage: "Utilisation: /server <serveur> [joueur]"
-  servers:
-    description: "Permet de lister les serveurs"
-    usage: "Utilisation: /servers"
-  message:
-    description: "Permet d'envoyer un message privé à un joueur"
-    usage: "Utilisation: /msg <joueur> <message>"
+depends: [UtariaDatabase]
