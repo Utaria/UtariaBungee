@@ -3,6 +3,8 @@ package fr.utaria.utariabungee.players;
 import fr.utaria.utariabungee.AbstractManager;
 import fr.utaria.utariabungee.UtariaBungee;
 import fr.utaria.utariabungee.util.UUtil;
+import fr.utaria.utariadatabase.database.Database;
+import fr.utaria.utariadatabase.database.DatabaseManager;
 import fr.utaria.utariadatabase.result.DatabaseSet;
 import fr.utaria.utariadatabase.util.ConfigTableAccessor;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -87,6 +89,25 @@ public class PlayersManager extends AbstractManager {
 	public static UtariaRank       getPlayerHighestRank(ProxiedPlayer player) {
 		PlayerInfo info = PlayersManager.getPlayerInfo(player);
 		return (info == null) ? null : info.getHighestRank();
+	}
+
+	public static DatabaseSet getInfoAbout(String who) {
+		Database db = DatabaseManager.getDB("global");
+
+		if (!UUtil.stringIsIP(who))
+			return db.select().from("players").where("playername = ?").attributes(who).find();
+		else
+			return db.select().from("players").where("first_ip = ? or last_ip = ?").attributes(who, who).find();
+	}
+	public static List<String> getAccountsUsingIp(String ip) {
+		Database     db  = DatabaseManager.getDB("global");
+		List<String> acc = new ArrayList<>();
+
+		List<DatabaseSet> sets = db.select("playername").from("players").where("first_ip = ? OR last_ip = ?").attributes(ip, ip).findAll();
+		for (DatabaseSet set : sets)
+			acc.add(set.getString("playername"));
+
+		return acc;
 	}
 
 	public static List<UtariaRank> getRanks() {

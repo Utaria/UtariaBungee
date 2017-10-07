@@ -9,12 +9,16 @@ public class UTime implements Cloneable {
 
 	private long time;
 
+	private String stringFormat;
+
 
 	public UTime(Timestamp timestamp) {
 		this(timestamp.getTime());
 	}
 	public UTime(String formattedTime) {
 		this(TimeParser.stringToTime(formattedTime).getTime());
+
+		this.stringFormat = formattedTime;
 	}
 	public UTime(long timestamp) {
 		this.time = timestamp;
@@ -67,6 +71,17 @@ public class UTime implements Cloneable {
 	public UTime normalize() {
 		if (this.time < 86400000) return new UTime(UTime.startOfDay().time + this.time);
 		else                      return new UTime(this.time);
+	}
+
+	public boolean isValid() {
+		return this.time > 0;
+	}
+
+	public String getStringFormat() {
+		if (this.stringFormat == null)
+			throw new NullPointerException("Vous n'avez pas créé cet objet avec une chaîne.");
+
+		return this.stringFormat;
 	}
 
 
@@ -152,6 +167,5 @@ public class UTime implements Cloneable {
 	public static UTime fromStartOfDay() {
 		return new UTime(System.currentTimeMillis() - UTime.startOfDay().getTime());
 	}
-
 
 }

@@ -5,7 +5,6 @@ import org.apache.commons.lang3.StringUtils;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -241,38 +240,6 @@ public class TimeParser {
 			}
 		}
 
-	}
-
-	public enum DateFactor {
-		YEAR  ('a', Calendar.YEAR),
-		MONTH ('o', Calendar.MONTH),
-		WEEK  ('w', Calendar.WEEK_OF_YEAR),
-		DAY   ('j', Calendar.DATE),
-		HOUR  ('h', Calendar.HOUR),
-		MINUTE('m', Calendar.MINUTE),
-		SECOND('s', Calendar.SECOND);
-
-
-		private char symbol;
-		private int  calendarField;
-
-
-		DateFactor(char symbol, int calendarField) {
-			this.symbol        = symbol;
-			this.calendarField = calendarField;
-		}
-
-		public int getCalendarField() {
-			return this.calendarField;
-		}
-
-		public static DateFactor fromSymbol(char symbol) {
-			for (DateFactor dateFactor : values())
-				if (dateFactor.symbol == symbol)
-					return dateFactor;
-
-			return null;
-		}
 	}
 
 }

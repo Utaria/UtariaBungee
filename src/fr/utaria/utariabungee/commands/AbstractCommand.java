@@ -100,7 +100,7 @@ public abstract class AbstractCommand extends Command {
 
 	private boolean hasRequiredRank(ProxiedPlayer player) {
 		for (UtariaRank rank : this.requiredRanks)
-			if (PlayersManager.playerHasRank(player, rank))
+			if (PlayersManager.playerHasRankLevel(player, rank.getLevel()))
 				return true;
 
 		return false;
@@ -122,7 +122,7 @@ public abstract class AbstractCommand extends Command {
 	}
 
 	protected String getArgument(int index) {
-		return this.args.get(index);
+		return (index >= 0 && index < this.args.size()) ? this.args.get(index) : null;
 	}
 
 }

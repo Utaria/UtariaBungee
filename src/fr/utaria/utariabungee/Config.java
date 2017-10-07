@@ -9,7 +9,7 @@ public class Config {
 	public final static String ERROR_PREFIX   = "§8(§4§l✖§8) §c";
 	public final static String INFO_PREFIX    = "§8(§e§l✦§8) §7";
 	public final static String SUCCESS_PREFIX = "§7(§2§l✔§7) §a";
-	public final static String MOD_PREFIX     = "§8[§c§lM§8] §7";
+	public final static String MOD_PREFIX     = "§8[§c§lMOD§8] §7";
 
 	public static int     socketServerPort   = 15000;
 	public static String  prefix             = "§8[§bUtaria§8] §7";

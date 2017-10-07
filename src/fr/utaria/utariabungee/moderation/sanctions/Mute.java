@@ -120,6 +120,13 @@ public class Mute implements Sanction {
 		return mute;
 	}
 
+	public static String generateMessageFrom(String reason, Timestamp muteEnd) {
+		Mute mute = new Mute(null, null, reason, null, null, null);
+		if (muteEnd != null) mute.setEndData(muteEnd);
+
+		return mute.getMessage();
+	}
+
 
 	public enum MuteState {
 		LOADING, YES, NO

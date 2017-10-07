@@ -8,6 +8,9 @@ import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 public class PlayerUtil {
 
@@ -74,17 +77,51 @@ public class PlayerUtil {
     	player.sendMessage(TextComponent.fromLegacyText(Config.ERROR_PREFIX + message));
 	}
 
+	public static List<ProxiedPlayer> listPlayers(String who) {
+    	List<ProxiedPlayer> players = new ArrayList<>();
+
+		if (UUtil.stringIsIP(who)) {
+			for (ProxiedPlayer player : ProxyServer.getInstance().getPlayers())
+				if (UUtil.getPlayerIP(player).equals(who))
+					players.add(player);
+		} else {
+			ProxiedPlayer player = ProxyServer.getInstance().getPlayer(who);
+			if (player != null && player.isConnected())
+				players.add(player);
+		}
+
+		return players;
+	}
+	public static boolean isConnected(String playername) {
+    	return ProxyServer.getInstance().getPlayer(playername) != null;
+	}
+	public static String getClientVersionOf(ProxiedPlayer player) {
+    	int version = player.getPendingConnection().getVersion();
+
+    	switch (version) {
+			case  47: return    "1.8";
+			case 107: return    "1.9";
+			case 108: return  "1.9.1";
+			case 109: return  "1.9.2";
+			case 110: return  "1.9.4";
+			case 210: return   "1.10";
+			case 315: return   "1.11";
+			case 316: return "1.11.2";
+			case 335: return   "1.12";
+			case 338: return "1.12.1";
+			case 340: return "1.12.2";
+
+			default: return "???";
+		}
+	}
 
     public static void kick(String who, BaseComponent[] message) {
-        if (UUtil.stringIsIP(who)) {
-            for (ProxiedPlayer player : ProxyServer.getInstance().getPlayers())
-                if (UUtil.getPlayerIP(player).equals(who))
-                    player.disconnect(message);
-        } else {
-            ProxiedPlayer player = ProxyServer.getInstance().getPlayer(who);
-            if (player != null && player.isConnected())
-                player.disconnect(message);
-        }
+    	for (ProxiedPlayer player : listPlayers(who))
+    		player.disconnect(message);
+    }
+    public static void sendMessage(String who, BaseComponent[] message) {
+		for (ProxiedPlayer player : listPlayers(who))
+			player.sendMessage(message);
     }
 
 

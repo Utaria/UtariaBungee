@@ -2,7 +2,7 @@ package fr.utaria.utariabungee.commands;
 
 import fr.utaria.utariabungee.AbstractManager;
 import fr.utaria.utariabungee.UtariaBungee;
-import fr.utaria.utariabungee.moderation.command.BanCommand;
+import fr.utaria.utariabungee.commands.moderation.*;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.TabCompleteEvent;
@@ -23,6 +23,12 @@ public class CommandManager extends AbstractManager {
 	@Override
 	public void initialize() {
 		new BanCommand();
+		new KickCommand();
+		new LookupCommand();
+		new TempbanCommand();
+		new TempMuteCommand();
+		new UnbanCommand();
+		new UnmuteCommand();
 	}
 
 
@@ -39,8 +45,10 @@ public class CommandManager extends AbstractManager {
 			case "tell":
 			case "m":
 			case "tempmute":
+			case "mute":
 			case "tempban":
 			case "lookup":
+			case "lk":
 			case "kick":
 			case "ban":
 			case "unmute":
