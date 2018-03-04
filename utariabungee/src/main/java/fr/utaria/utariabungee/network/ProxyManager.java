@@ -166,7 +166,7 @@ public class ProxyManager extends AbstractManager implements Runnable {
 						result.getString("name"),
 						result.getString("ip"),
 						result.getInteger("port"),
-						result.getInteger("rank_level_needed")
+						0
 				);
 
 				uServer.setSocketServerPort(result.getInteger("socket_server_port"));

@@ -36,6 +36,8 @@ public class CommandManager extends AbstractManager {
 		new TempMuteCommand();
 		new UnbanCommand();
 		new UnmuteCommand();
+
+		new RestartCommand();
 	}
 
 	@EventHandler

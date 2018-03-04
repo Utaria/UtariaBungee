@@ -8,8 +8,6 @@ import fr.utaria.utariabungee.util.UUtil;
 import fr.utaria.utariadatabase.util.ConfigTableAccessor;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.TextComponent;
-import net.md_5.bungee.api.event.ChatEvent;
-import net.md_5.bungee.event.EventHandler;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -58,14 +56,6 @@ public class AutoRestartManager extends AbstractManager implements Runnable {
 	@Override
 	public void initialize() {
 
-	}
-
-	@EventHandler
-	public void onPlayerCommand(ChatEvent event) {
-		if (event.getMessage().equals("restart")) {
-			this.doRestart();
-			event.setCancelled(true);
-		}
 	}
 
 	private long getSecondsOnDay() {
