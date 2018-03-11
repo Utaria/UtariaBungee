@@ -4,7 +4,7 @@ import com.google.common.base.Charsets;
 import com.google.common.hash.Hashing;
 import fr.utaria.utariabungee.Config;
 import fr.utaria.utariabungee.UtariaBungee;
-import fr.utaria.utariabungee.antibot.AntiBotManager;
+import fr.utaria.utariabungee.antivpn.AntiVPNManager;
 import fr.utaria.utariabungee.chat.PMManager;
 import fr.utaria.utariabungee.chat.SpecialChannels;
 import fr.utaria.utariabungee.moderation.ModerationManager;
@@ -30,11 +30,11 @@ public class NetworkListener implements Listener {
 
 	private ProxyManager manager;
 
-	private AntiBotManager antiBotManager;
+	private AntiVPNManager antiVPNManager;
 
 	public NetworkListener(ProxyManager proxyManager) {
 		this.manager = proxyManager;
-		this.antiBotManager = UtariaBungee.getInstance().getInstance(AntiBotManager.class);
+		this.antiVPNManager = UtariaBungee.getInstance().getInstance(AntiVPNManager.class);
 	}
 
 	@EventHandler
@@ -147,29 +147,16 @@ public class NetworkListener implements Listener {
 				return;
 			}
 
-
 			/* --------------------- */
-			/*  Protection anti-bot  */
+			/*  Protection anti-VPN  */
 			/* --------------------- */
 			String ip = UUtil.getConnectionIP(event.getConnection());
 
-			// 1ère vérification
-			if (this.antiBotManager.ipIsBot(ip)) {
-				ProxyServer.getInstance().getConsole().sendMessage(new TextComponent("L'IP " + ip + " semble être un bot et a été rejetée."));
+			if (this.antiVPNManager.isBlackIp(ip)) {
+				UtariaBungee.getInstance().getLogger().warning("L'IP " + ip + " semble être un VPN et a été rejetée.");
 
 				event.setCancelled(true);
-				event.setCancelReason("Votre IP semble être non sécurisée, déconnexion.");
-				this.completeEvent(event);
-				return;
-			}
-
-			// 2ème vérification
-			if (!this.antiBotManager.passSecondProtection(event.getConnection().isOnlineMode())) {
-				event.setCancelled(true);
-				event.setCancelReason("Nous accueillons beaucoup de joueurs, veuillez patienter.");
-				this.completeEvent(event);
-
-				return;
+				event.setCancelReason(TextComponent.fromLegacyText(ChatColor.RED + "Votre IP ne respecte pas notre règlement."));
 			}
 
 			this.completeEvent(event);

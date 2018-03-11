@@ -14,7 +14,7 @@ public class SpyCommand extends AbstractCommand {
 	public SpyCommand() {
 		super("spy");
 
-		this.setPermission("modo.spy");
+		this.setPermission("respmodo.spy");
 	}
 
 	@Override

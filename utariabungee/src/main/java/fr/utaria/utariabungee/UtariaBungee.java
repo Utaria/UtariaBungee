@@ -1,6 +1,7 @@
 package fr.utaria.utariabungee;
 
-import fr.utaria.utariabungee.antibot.AntiBotManager;
+import fr.utaria.utariabungee.antivpn.AntiVPNManager;
+import fr.utaria.utariabungee.chat.ChatManager;
 import fr.utaria.utariabungee.chat.PMManager;
 import fr.utaria.utariabungee.chat.SpecialChannel;
 import fr.utaria.utariabungee.chat.SpecialChannels;
@@ -34,12 +35,13 @@ public class UtariaBungee extends UtariaPlugin {
 		DatabaseManager.applyMigrations("moderation");
 
 		// Gestionnaires
-		new AntiBotManager();
+		new AntiVPNManager();
 		new ModerationManager();
 
 		new ProxyManager();
 
 		new AutoRestartManager();
+		new ChatManager();
 		new PMManager();
 
 		new PlayersManager();
@@ -68,6 +70,9 @@ public class UtariaBungee extends UtariaPlugin {
 		// On éteint le serveur de socket
 		if (this.socketServer != null)
 			this.socketServer.stop();
+
+		// On sauvegarde le cache du gestionnaire de VPNs
+		getInstance(AntiVPNManager.class).save();
 	}
 
 	public static UtariaBungee getInstance() {

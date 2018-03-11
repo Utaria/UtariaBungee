@@ -9,6 +9,7 @@ import net.md_5.bungee.api.event.PlayerDisconnectEvent;
 import net.md_5.bungee.api.event.PostLoginEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
+import net.md_5.bungee.event.EventPriority;
 
 public class ModerationListener implements Listener {
 
@@ -21,7 +22,7 @@ public class ModerationListener implements Listener {
 	// La partie vérification de bannissement se fait dans le
 	// NetworkListener car on ne peut pas mettre en attente deux fois le même event.
 
-	@EventHandler
+	@EventHandler(priority = EventPriority.LOW)
 	public void onPlayerPostLogin(PostLoginEvent event) {
 		// On récupère les données de mute sur le joueur et on les mets en cache.
 		UtariaBungee.getInstance().getProxy().getScheduler().runAsync(
