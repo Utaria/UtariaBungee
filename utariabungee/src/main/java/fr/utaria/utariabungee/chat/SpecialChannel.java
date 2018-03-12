@@ -72,7 +72,6 @@ public class SpecialChannel {
 			player.sendMessage(new TextComponent(formattedMessage));
 
 		UtariaBungee.getInstance().getLogger().info("[Canal " + this.name + "] " + formattedMessage);
-
 		return true;
 	}
 

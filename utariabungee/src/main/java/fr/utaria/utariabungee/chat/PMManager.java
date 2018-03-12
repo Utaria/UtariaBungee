@@ -26,13 +26,13 @@ public class PMManager extends AbstractManager {
 
 	public void sendPrivateMessageTo(ProxiedPlayer sender, ProxiedPlayer receiver, String message) {
 		// On envoie le message à l'expéditeur et au destinataire
-		receiver.sendMessage(TextComponent.fromLegacyText("§2" + sender.getName() + "§e à §avous§e: " + message));
-		sender.sendMessage(TextComponent.fromLegacyText("§aVous§e à §2" + receiver.getName() + "§e: " + message));
+		receiver.sendMessage(TextComponent.fromLegacyText("§a" + sender.getName() + "§7 à §3vous§8: §e" + message));
+		sender.sendMessage(TextComponent.fromLegacyText("§3Vous§7 à §a" + receiver.getName() + "§8: §e" + message));
 
 		// On envoie le message aux joueurs en mode SPY
 		BaseComponent[] spyText = null;
 		if (this.playersSpying.size() > 0)
-			spyText = TextComponent.fromLegacyText("§a§l+§2" + sender.getName() + "§8 à §2" + receiver.getName() + "§e: " + message);
+			spyText = TextComponent.fromLegacyText("§d§l+§a" + sender.getName() + "§7 à §a" + receiver.getName() + "§7: §e" + message);
 
 		for (ProxiedPlayer player : this.playersSpying)
 			if (player.isConnected() && player != sender && player != receiver)

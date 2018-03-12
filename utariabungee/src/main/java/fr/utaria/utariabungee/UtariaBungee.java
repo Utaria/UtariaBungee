@@ -22,7 +22,7 @@ public class UtariaBungee extends UtariaPlugin {
 
 	private static UtariaBungee instance;
 
-	private static SpecialChannel staffChannel;
+	private static SpecialChannel modoChannel;
 
 	private SocketServer socketServer;
 
@@ -48,6 +48,7 @@ public class UtariaBungee extends UtariaPlugin {
 		new AutoMessageTask();
 		new TabHeadersTask();
 
+		new SpecialChannels();
 		new CommandManager();
 
 
@@ -62,8 +63,8 @@ public class UtariaBungee extends UtariaPlugin {
 
 
 		// On enregistre les canaux de discussions spéciaux
-		staffChannel = new SpecialChannel("Staff", "§d§lS >r %prefix% %player%: §f%message%", '!');
-		SpecialChannels.registerSpecialChannel(staffChannel);
+		modoChannel = new SpecialChannel("Modo", "§8[§2§lM§8] §3%prefix%%player%: §f%message%", '!');
+		SpecialChannels.registerSpecialChannel(modoChannel);
 	}
 
 	public void onDisable() {
@@ -79,8 +80,8 @@ public class UtariaBungee extends UtariaPlugin {
 		return instance;
 	}
 
-	public static SpecialChannel getStaffChannel() {
-		return staffChannel;
+	public static SpecialChannel getModoChannel() {
+		return modoChannel;
 	}
 
 }

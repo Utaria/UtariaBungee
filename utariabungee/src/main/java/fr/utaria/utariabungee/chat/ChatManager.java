@@ -67,7 +67,7 @@ public class ChatManager extends AbstractManager {
 		// Fin chat slow
 
 		// Filtrage du chat
-		if (this.checkForSpam(event.getMessage())) {
+		if (this.checkForFlood(event.getMessage())) {
 			event.setCancelled(true);
 			player.sendMessage(TextComponent.fromLegacyText(Config.ERROR_PREFIX + "Votre message ne suit pas le règlement."));
 			return;
@@ -116,7 +116,7 @@ public class ChatManager extends AbstractManager {
 		return IP_PATTERN.matcher(message).find() || URL_PATTERN.matcher(message).find();
 	}
 
-	private boolean checkForSpam(String message) {
+	private boolean checkForFlood(String message) {
 		for (String word : message.split("\\s+"))
 			if (word.length() >= MAX_LENGTH_WORD && MAX_LENGTH_WORD != 0)
 				return true;

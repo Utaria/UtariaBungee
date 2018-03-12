@@ -13,6 +13,7 @@ import fr.utaria.utariabungee.network.AutoRestartManager;
 import fr.utaria.utariabungee.network.ProxyManager;
 import fr.utaria.utariabungee.players.PlayerInfo;
 import fr.utaria.utariabungee.players.PlayersManager;
+import fr.utaria.utariabungee.players.UtariaPlayer;
 import fr.utaria.utariabungee.util.PlayerUtil;
 import fr.utaria.utariabungee.util.TextUtil;
 import fr.utaria.utariabungee.util.UUtil;
@@ -172,8 +173,8 @@ public class NetworkListener implements Listener {
 			PlayerInfo.get(pp);
 
 			// On ajoute le joueur aux canal de discussion "Staff" s'il fait partie du staff
-			if (this.manager.isStaffmember(pp.getName()))
-				UtariaBungee.getStaffChannel().addPlayer(pp);
+			if (UtariaPlayer.get(pp).hasPerm("modo.channel"))
+				UtariaBungee.getModoChannel().addPlayer(pp);
 		});
 	}
 

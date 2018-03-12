@@ -1,5 +1,7 @@
 package fr.utaria.utariabungee.chat;
 
+import fr.utaria.utariabungee.UtariaBungee;
+import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.ChatEvent;
 import net.md_5.bungee.api.plugin.Listener;
@@ -15,6 +17,10 @@ public class SpecialChannels implements Listener {
 
 	static {
 		channels = new ArrayList<>();
+	}
+
+	public SpecialChannels() {
+		ProxyServer.getInstance().getPluginManager().registerListener(UtariaBungee.getInstance(), this);
 	}
 
 	public static void registerSpecialChannel(SpecialChannel channel) {
@@ -44,11 +50,9 @@ public class SpecialChannels implements Listener {
 		return sended;
 	}
 
-	@EventHandler(priority = EventPriority.HIGH)
-	public void onPlayerSendMessage(ChatEvent e) {
-		if (!(e.getSender() instanceof ProxiedPlayer)) return;
-		if (e.isCancelled()) return;
-
+	@EventHandler(priority = EventPriority.LOW)
+	public void onChat(ChatEvent e) {
+		if (e.isCancelled() || e.isCommand() || !(e.getSender() instanceof ProxiedPlayer)) return;
 		e.setCancelled(SpecialChannels.tryToSendInChannel((ProxiedPlayer) e.getSender(), e.getMessage()));
 	}
 
