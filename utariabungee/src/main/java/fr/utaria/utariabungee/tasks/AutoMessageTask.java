@@ -8,6 +8,7 @@ import fr.utaria.utariadatabase.database.Database;
 import fr.utaria.utariadatabase.database.DatabaseManager;
 import fr.utaria.utariadatabase.result.DatabaseSet;
 import net.md_5.bungee.api.ProxyServer;
+import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 import java.util.concurrent.TimeUnit;
@@ -69,6 +70,8 @@ public class AutoMessageTask implements Runnable {
 	}
 
 	private void broadcast(String message) {
+		ProxyServer.getInstance().broadcast(new TextComponent(message));
+
 		for (ProxiedPlayer player : ProxyServer.getInstance().getPlayers())
 			PlayerUtil.sendCenteredMessage(player, message);
 	}

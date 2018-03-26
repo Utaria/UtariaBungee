@@ -53,7 +53,7 @@ public class UUtil {
 		StringBuilder messageBuilder = new StringBuilder();
 
 		for (String word : words) {
-			if (word.substring(0, 1).equals("&"))
+			if (word.length() > 0 && word.substring(0, 1).equals("&"))
 				color = word.substring(1, 2);
 			else
 				if (color != null)

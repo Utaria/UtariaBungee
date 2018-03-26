@@ -24,7 +24,7 @@ public class ChatManager extends AbstractManager {
 
 	private final static int PERCENT_CAPS = 50;
 
-	private final static int MAX_LENGTH_WORD = 15;
+	private final static int MAX_LENGTH_WORD = 25;
 
 	private int slow;
 
@@ -78,8 +78,6 @@ public class ChatManager extends AbstractManager {
 			player.sendMessage(TextComponent.fromLegacyText(Config.ERROR_PREFIX + "Merci de ne pas poster d'IPs ou de liens."));
 			return;
 		}
-
-		UtariaBungee.getInstance().getLogger().info("url matcher: " + URL_PATTERN.matcher(event.getMessage().trim()).find());
 
 		event.setMessage(this.filterCaps(event.getMessage()));
 		// Fin du filtrage
