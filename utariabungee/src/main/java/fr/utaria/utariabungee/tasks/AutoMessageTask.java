@@ -70,7 +70,8 @@ public class AutoMessageTask implements Runnable {
 	}
 
 	private void broadcast(String message) {
-		ProxyServer.getInstance().broadcast(new TextComponent(message));
+		// On l'envoie aussi à la console
+		ProxyServer.getInstance().getConsole().sendMessage(new TextComponent(message));
 
 		for (ProxiedPlayer player : ProxyServer.getInstance().getPlayers())
 			PlayerUtil.sendCenteredMessage(player, message);

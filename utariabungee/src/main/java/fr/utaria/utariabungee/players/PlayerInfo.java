@@ -44,7 +44,7 @@ public class PlayerInfo extends DatabaseAccessor {
 
 	/*    Mise à jour des informations de puis la BDD    */
 	private void reload() {
-		DatabaseSet infoSet = this.getDB().select("id", "coins")
+		DatabaseSet infoSet = this.getDB().select("id", "coins", "password")
 				.from(PlayersManager.PLAYERS_TABLE).where("playername = ?")
 				.attributes(uPlayer.getPlayerName()).find();
 
