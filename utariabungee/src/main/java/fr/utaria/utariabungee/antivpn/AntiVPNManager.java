@@ -27,6 +27,8 @@ public class AntiVPNManager extends AbstractManager {
 
 	private VPNCache cache;
 
+	private VPNExceptionList exceptionList;
+
 	public AntiVPNManager() {
 		super(UtariaBungee.getInstance());
 	}
@@ -34,9 +36,11 @@ public class AntiVPNManager extends AbstractManager {
 	@Override
 	public void initialize() {
 		this.cache = new VPNCache();
+		this.exceptionList = new VPNExceptionList();
 
 		try {
 			this.cache.load();
+			this.exceptionList.load();
 		} catch (IOException | ClassNotFoundException e) {
 			e.printStackTrace();
 		}
@@ -47,14 +51,22 @@ public class AntiVPNManager extends AbstractManager {
 	public void save() {
 		try {
 			this.cache.save();
+			this.exceptionList.save();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 
+	public VPNExceptionList getExceptionList() {
+		return this.exceptionList;
+	}
+
 	public boolean isBlackIp(String ip) {
 		// Quelques IPs passent les tests ...
 		if (this.isLocalIp(ip)) return false;
+
+		// Les IPs qui sont dans la liste des exceptions passent le test!
+		if (this.exceptionList.isInExceptionList(ip)) return false;
 
 		// IP déjà enregistrée dans le cache ...
 		if (this.cache.isCached(ip))

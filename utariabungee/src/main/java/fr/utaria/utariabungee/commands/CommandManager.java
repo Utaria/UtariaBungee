@@ -33,6 +33,7 @@ public class CommandManager extends AbstractManager {
 		new SpyCommand();
 
 		// Modération
+		new AntiVPNCommand();
 		new BanCommand();
 		new KickCommand();
 		new LookupCommand();

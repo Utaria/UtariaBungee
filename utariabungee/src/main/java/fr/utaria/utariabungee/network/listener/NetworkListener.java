@@ -211,7 +211,7 @@ public class NetworkListener implements Listener {
 		if (!message.trim().contains(" ")) {
 			String cryptedMessage = Hashing.sha1().hashString(message.trim(), Charsets.UTF_8).toString();
 
-			if (cryptedMessage.equalsIgnoreCase(PlayerInfo.get(player).getCryptedPassword())) {
+			if (!serverName.equals("connexion") && !serverName.equals("default") && cryptedMessage.equalsIgnoreCase(PlayerInfo.get(player).getCryptedPassword())) {
 				event.setCancelled(true);
 				player.sendMessage(TextComponent.fromLegacyText(Config.ERROR_PREFIX + "Attention à ne pas envoyer votre mot de passe !"));
 			}
