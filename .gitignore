@@ -1,5 +1,6 @@
 out/
 *.iml
 META-INF/*
-target/*
+utariabungee/target
+utariabungee-api/target
 .idea/
